@@ -1,0 +1,199 @@
+{
+  "dataset": "aegean",
+  "id": "l1-sumif-sumifs",
+  "level": 1,
+  "order": 3,
+  "title": "SUMIF → SUMIFS: conditional totals",
+  "estMinutes": 15,
+  "concept": "SUM adds everything. Usually you need a total for **some rows only**: one region, one rep, big orders. That's SUMIF (one condition) and SUMIFS (one or more).\n\n`=SUMIF(D2:D181,\"Attica\",G2:G181)`: look down the regions in D; wherever it says Attica, add that row's quantity from G. It's **{{=SUMIF(D2:D181,\"Attica\",G2:G181)}}**.\n\n`=SUMIFS(G2:G181,D2:D181,\"Attica\")` gives the same total the SUMIFS way. Add more *range, criteria* pairs to narrow it further: `=SUMIFS(G2:G181,D2:D181,\"Attica\",F2:F181,\"Online\")` is Attica's online orders only ({{=SUMIFS(G2:G181,D2:D181,\"Attica\",F2:F181,\"Online\")}} units).\n\n> [!warn] **The argument-order trap.** In SUMIF the range you add up comes **last**. In SUMIFS it comes **first**. Mix them up and you get 0 or an error, and tests love this one. Many analysts simply use SUMIFS everywhere, even for one condition, so the order never changes.\n\nCriteria are text in quotes: `\"Attica\"`. Comparisons go *inside* the quotes: `\">=10\"`, `\"<>Crete\"`. The ranges must be the same size and line up row for row.",
+  "syntax": [
+    {
+      "signature": "=SUMIF(range, criteria, sum_range)",
+      "args": [
+        {
+          "name": "range",
+          "desc": "where to test the condition, e.g. the regions `D2:D181`"
+        },
+        {
+          "name": "criteria",
+          "desc": "the condition, in quotes: `\"Attica\"`, `\">=10\"`"
+        },
+        {
+          "name": "sum_range",
+          "desc": "what to add up. **Last** in SUMIF"
+        }
+      ]
+    },
+    {
+      "signature": "=SUMIFS(sum_range, criteria_range1, criteria1, …)",
+      "args": [
+        {
+          "name": "sum_range",
+          "desc": "what to add up. **First** in SUMIFS"
+        },
+        {
+          "name": "criteria_range1",
+          "desc": "where to test the first condition"
+        },
+        {
+          "name": "criteria1",
+          "desc": "the first condition; add more range/criteria pairs as needed"
+        }
+      ]
+    }
+  ],
+  "worked": {
+    "prompt": "What's the total quantity sold in Attica?",
+    "formula": "=SUMIFS(G2:G181,D2:D181,\"Attica\")",
+    "explain": "SUMIFS checks every region in D2:D181. The {{=COUNTIF(D2:D181,\"Attica\")}} Attica rows are added from column G: **{{=SUMIFS(G2:G181,D2:D181,\"Attica\")}}**. Run it and the quantities that were added light up blue.",
+    "expect": 1109
+  },
+  "mistakes": [
+    "SUMIF's order inside SUMIFS: `SUMIFS(D2:D181,\"Attica\",G2:G181)` puts every piece in the wrong slot.",
+    "No quotes: `SUMIFS(G2:G181,D2:D181,Attica)` gives #NAME?.",
+    "The comparison outside the quotes: write `\">=10\"`, not `>=\"10\"`.",
+    "Ranges that don't line up: pairing `G2:G181` with `D1:D180` matches each quantity with the *previous* row's region."
+  ],
+  "drills": [
+    {
+      "id": "crete-sumif",
+      "ask": "Total quantity sold in **Crete**, using **SUMIF**.",
+      "starter": "",
+      "answerCheck": [
+        {
+          "type": "value",
+          "expect": 528
+        },
+        {
+          "type": "formula-uses",
+          "functions": [
+            "SUMIF"
+          ]
+        }
+      ],
+      "hint": "`SUMIF(range to test, \"Crete\", range to add)`. In SUMIF the range to add goes last.",
+      "solution": "=SUMIF(D2:D181,\"Crete\",G2:G181)"
+    },
+    {
+      "id": "crete-sumifs",
+      "ask": "The same total, now with **SUMIFS**. Watch the order.",
+      "starter": "",
+      "answerCheck": [
+        {
+          "type": "value",
+          "expect": 528
+        },
+        {
+          "type": "formula-uses",
+          "functions": [
+            "SUMIFS"
+          ]
+        }
+      ],
+      "hint": "In SUMIFS the range to add, `G2:G181`, comes first.",
+      "solution": "=SUMIFS(G2:G181,D2:D181,\"Crete\")"
+    },
+    {
+      "id": "makri-online",
+      "ask": "Total quantity sold by **Eleni Makri** through the **Online** channel.",
+      "starter": "",
+      "answerCheck": [
+        {
+          "type": "value",
+          "expect": 266
+        },
+        {
+          "type": "formula-uses",
+          "functions": [
+            "SUMIFS"
+          ]
+        }
+      ],
+      "hint": "Two conditions: reps in `E2:E181` equal `\"Eleni Makri\"`, and channels in `F2:F181` equal `\"Online\"`. Names must match exactly.",
+      "solution": "=SUMIFS(G2:G181,E2:E181,\"Eleni Makri\",F2:F181,\"Online\")"
+    },
+    {
+      "id": "mouse-macedonia",
+      "ask": "Total quantity of Wireless Mice (product ID **P004**) sold in **Macedonia**.",
+      "starter": "",
+      "answerCheck": [
+        {
+          "type": "value",
+          "expect": 71
+        },
+        {
+          "type": "formula-uses",
+          "functions": [
+            "SUMIFS"
+          ]
+        }
+      ],
+      "hint": "Product IDs are in column C: add a `C2:C181, \"P004\"` pair.",
+      "solution": "=SUMIFS(G2:G181,C2:C181,\"P004\",D2:D181,\"Macedonia\")"
+    },
+    {
+      "id": "attica-big",
+      "ask": "Total quantity from **Attica** orders of **at least 25** units.",
+      "starter": "",
+      "answerCheck": [
+        {
+          "type": "value",
+          "expect": 720
+        },
+        {
+          "type": "formula-uses",
+          "functions": [
+            "SUMIFS"
+          ]
+        }
+      ],
+      "hint": "The quantity column can be both what you add and a condition. The condition is `\">=25\"`, in quotes.",
+      "solution": "=SUMIFS(G2:G181,D2:D181,\"Attica\",G2:G181,\">=25\")"
+    }
+  ],
+  "checkpoint": {
+    "type": "quiz",
+    "passMark": 2,
+    "questions": [
+      {
+        "id": "sumif-order",
+        "prompt": "In **SUMIF**, where does the range you're adding up go?",
+        "options": [
+          "First",
+          "Second",
+          "Last",
+          "Anywhere"
+        ],
+        "answer": 2,
+        "explain": "`SUMIF(range, criteria, sum_range)`: last. In SUMIFS it goes first."
+      },
+      {
+        "id": "quote-criteria",
+        "prompt": "Which criteria is written correctly for \"at least 10\"?",
+        "options": [
+          "`\">=10\"`",
+          "`>=\"10\"`",
+          "`>=10`",
+          "`\"=>10\"`"
+        ],
+        "answer": 0,
+        "explain": "The whole comparison goes inside the quotes, with `>` before `=`."
+      },
+      {
+        "id": "attica-monitor",
+        "prompt": "What does `=SUMIFS(G2:G181,D2:D181,\"Attica\",C2:C181,\"P002\")` return on the practice sheet?",
+        "options": [
+          "0",
+          "39",
+          "221",
+          "1109"
+        ],
+        "answer": 1,
+        "explain": "It adds only the rows that are both Attica AND product P002 (Monitor 27in).",
+        "verify": "=SUMIFS(G2:G181,D2:D181,\"Attica\",C2:C181,\"P002\")"
+      }
+    ]
+  },
+  "claimAfter": "I can total a column for only the rows that meet one or more conditions, using SUMIF and SUMIFS.",
+  "notYet": "Totals by date period (month, quarter) and summarising every region at once. Those are pivot tables, in Level 3."
+}

@@ -1,0 +1,194 @@
+{
+  "dataset": "aegean",
+  "id": "l2-vlookup",
+  "level": 2,
+  "order": 1,
+  "title": "VLOOKUP: search down, return across",
+  "estMinutes": 15,
+  "concept": "The order log stores a **ProductID** (column C), not the product's name or price. Those live once, in the product table (J2:N15). Joining the two is what lookups do, and it's the skill practical Excel tests name most.\n\n`=VLOOKUP(C2,$J$2:$N$15,2,FALSE)` reads: take the ID in C2, **search down the first column** of the table (J) until you find it, then **move across** to column 2 of the table and return what's there. For order O1001 that's **{{=VLOOKUP(C2,$J$2:$N$15,2,FALSE)}}**.\n\nThe column number counts from the **table's** left edge, not the sheet's: in `$J$2:$N$15`, J is 1, K (name) is 2, L (category) is 3, M (unit cost) is 4, N (list price) is 5.\n\nThree habits separate a right answer from a lucky one:\n\n1. **End with FALSE** (or 0) for an exact match. Why that matters is the next lesson.\n2. **Lock the table** with `$` so it doesn't slide down when you copy the formula to the next rows. Whole columns work too: `$J:$N`.\n3. **VLOOKUP only looks right.** The value you search for must be in the table's *first* column. For anything to its left, use XLOOKUP or INDEX/MATCH (lessons 3 and 4).",
+  "syntax": [
+    {
+      "signature": "=VLOOKUP(lookup_value, table_array, col_index_num, [range_lookup])",
+      "args": [
+        {
+          "name": "lookup_value",
+          "desc": "what to find, e.g. the ProductID in `C2`"
+        },
+        {
+          "name": "table_array",
+          "desc": "the table to search, locked: `$J$2:$N$15`. Its first column is searched"
+        },
+        {
+          "name": "col_index_num",
+          "desc": "which column of the table to return, counting from the table's left edge"
+        },
+        {
+          "name": "range_lookup",
+          "desc": "`FALSE` (or 0) = exact match. Always, for IDs and names"
+        }
+      ]
+    }
+  ],
+  "worked": {
+    "prompt": "What's the name of the product on order O1001 (row 2)?",
+    "formula": "=VLOOKUP(C2,$J$2:$N$15,2,FALSE)",
+    "explain": "C2 holds **{{=C2}}**. VLOOKUP searches J2:J15 from the top (the clay path), matches it (green), moves to column 2 of the table (K) and returns **{{=VLOOKUP(C2,$J$2:$N$15,2,FALSE)}}** (blue). Run it and watch the path.",
+    "expect": "Laptop Pro 14"
+  },
+  "mistakes": [
+    "Counting the column from the sheet's column A: ListPrice is column 14 of the *sheet* but column **5** of `$J$2:$N$15`. `VLOOKUP(C2,$J$2:$N$15,14,FALSE)` gives #REF!.",
+    "Leaving out FALSE. On this sorted product table you might still get the right answer, by luck. Lesson 2 shows how it goes wrong.",
+    "An unlocked table: `J2:N15` copied down one row becomes `J3:N16`, which drops P001, so every Laptop order below returns #N/A.",
+    "Trying to look left: VLOOKUP can't return the ID for a given name, because the name isn't in the first column."
+  ],
+  "drills": [
+    {
+      "id": "name-row2",
+      "ask": "Return the **product name** for order O1001 (row 2).",
+      "starter": "",
+      "answerCheck": [
+        {
+          "type": "value",
+          "expect": "Laptop Pro 14"
+        },
+        {
+          "type": "formula-uses",
+          "functions": [
+            "VLOOKUP"
+          ],
+          "exactMatch": true
+        }
+      ],
+      "hint": "Search for `C2` in the product table; the name is column **2** of `$J$2:$N$15`.",
+      "solution": "=VLOOKUP(C2,$J$2:$N$15,2,FALSE)"
+    },
+    {
+      "id": "price-row3",
+      "ask": "Return the **list price** of the product on order O1002 (row 3), with the product table **locked**.",
+      "starter": "",
+      "answerCheck": [
+        {
+          "type": "value",
+          "expect": 69
+        },
+        {
+          "type": "formula-uses",
+          "functions": [
+            "VLOOKUP"
+          ],
+          "exactMatch": true,
+          "lockedRanges": [
+            "J:N"
+          ]
+        }
+      ],
+      "hint": "ListPrice is the table's 5th column (J=1 … N=5). Lock the table: `$J$2:$N$15`.",
+      "solution": "=VLOOKUP(C3,$J$2:$N$15,5,FALSE)"
+    },
+    {
+      "id": "category-p009",
+      "ask": "What **category** is product **P009** in?",
+      "starter": "",
+      "answerCheck": [
+        {
+          "type": "value",
+          "expect": "Furniture"
+        },
+        {
+          "type": "formula-uses",
+          "functions": [
+            "VLOOKUP"
+          ],
+          "exactMatch": true
+        }
+      ],
+      "hint": "The lookup value can be typed in quotes: `\"P009\"`. Category is column 3 of the table.",
+      "solution": "=VLOOKUP(\"P009\",$J$2:$N$15,3,FALSE)"
+    },
+    {
+      "id": "cost-row12",
+      "ask": "Return the **unit cost** of the product on order O1011 (row 12).",
+      "starter": "",
+      "answerCheck": [
+        {
+          "type": "value",
+          "expect": 48
+        },
+        {
+          "type": "formula-uses",
+          "functions": [
+            "VLOOKUP"
+          ],
+          "exactMatch": true
+        }
+      ],
+      "hint": "UnitCost is column 4 of the product table.",
+      "solution": "=VLOOKUP(C12,$J$2:$N$15,4,FALSE)"
+    },
+    {
+      "id": "rep-target",
+      "ask": "The reps table is `$P$2:$T$8`, with RepID in its first column. What's the revenue **Target** of rep **R07**?",
+      "starter": "",
+      "answerCheck": [
+        {
+          "type": "value",
+          "expect": 55000
+        },
+        {
+          "type": "formula-uses",
+          "functions": [
+            "VLOOKUP"
+          ],
+          "exactMatch": true
+        }
+      ],
+      "hint": "Same pattern, different table: search the RepIDs, and Target is column 5 of `$P$2:$T$8`.",
+      "solution": "=VLOOKUP(\"R07\",$P$2:$T$8,5,FALSE)"
+    }
+  ],
+  "checkpoint": {
+    "type": "quiz",
+    "passMark": 2,
+    "questions": [
+      {
+        "id": "col-index",
+        "prompt": "In `=VLOOKUP(C2,$J$2:$N$15,5,FALSE)`, what does the 5 refer to?",
+        "options": [
+          "Column N (ListPrice): the 5th column of the table",
+          "Column E of the sheet",
+          "The 5th row of the table",
+          "Five matches"
+        ],
+        "answer": 0,
+        "explain": "The column number counts from the table's left edge: J=1, K=2, L=3, M=4, N=5."
+      },
+      {
+        "id": "lock-why",
+        "prompt": "Why lock the table as `$J$2:$N$15`?",
+        "options": [
+          "So the formula runs faster",
+          "So it doesn't slide down when the formula is copied to the next rows",
+          "Because VLOOKUP requires $ signs",
+          "To make it an exact match"
+        ],
+        "answer": 1,
+        "explain": "Unlocked, the table moves with the formula: row 3's copy would search J3:N16 and miss P001."
+      },
+      {
+        "id": "p004-name",
+        "prompt": "What does `=VLOOKUP(\"P004\",$J$2:$N$15,2,FALSE)` return?",
+        "options": [
+          "Mechanical Keyboard",
+          "Wireless Mouse",
+          "#N/A",
+          "P004"
+        ],
+        "answer": 1,
+        "explain": "It finds P004 in J5 and returns column 2 (the name) from the same row.",
+        "verify": "=VLOOKUP(\"P004\",$J$2:$N$15,2,FALSE)"
+      }
+    ]
+  },
+  "claimAfter": "I can pull a matching value from another table with VLOOKUP: exact match, with the table locked.",
+  "notYet": "Approximate matches (bands and tiers), looking left, and IDs that aren't in the table. That's the rest of Level 2."
+}

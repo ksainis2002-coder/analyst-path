@@ -1,0 +1,123 @@
+{
+  "dataset": "aegean",
+  "id": "l0-formulas-values",
+  "level": 0,
+  "order": 2,
+  "title": "Formulas, not typed answers",
+  "estMinutes": 10,
+  "concept": "Type `13` into a cell and it's a **value**: it stays 13 forever. Type `=SUM(G2:G4)` and it's a **formula**: it shows {{=SUM(G2:G4)}} today, and updates the moment any of those cells change. In a hiring test, a typed-in answer that happens to be right still counts as wrong: the reviewer clicks the cell and sees no formula.\n\nFormulas do arithmetic with `+`, `-`, `*` (multiply) and `/` (divide). Excel follows the usual order: multiplication and division before addition and subtraction, and anything in brackets first. `=2+3*4` is 14; `=(2+3)*4` is 20.\n\nDates and percentages are numbers too, just *shown* differently. B2 shows {{=B2}}, but Excel stores it as the number {{=B2+0}} (days since 1900). H2 shows {{=H2}}, which is the number {{=H2+0}}. That's why you can do arithmetic with them.\n\n> [!warn] This app checks what a test reviewer checks: a drill answer must be a formula that points at cells. Typing the number itself won't pass.",
+  "syntax": [
+    {
+      "signature": "=G2*N2*(1-H2)",
+      "args": [
+        {
+          "name": "+ - * /",
+          "desc": "add, subtract, multiply, divide"
+        },
+        {
+          "name": "( )",
+          "desc": "brackets: work this part out first"
+        }
+      ]
+    }
+  ],
+  "worked": {
+    "prompt": "Order O1001 (row 2) is for the Laptop Pro 14, whose list price is in N2. What's it worth before any discount?",
+    "formula": "=G2*N2",
+    "explain": "G2 holds the quantity ({{=G2}}) and N2 the Laptop's list price ({{=N2}}). {{=G2}} × {{=N2}} = **{{=G2*N2}}**.",
+    "expect": 12990
+  },
+  "mistakes": [
+    "Typing the answer (`12990`) instead of the formula (`=G2*N2`). It looks right until the data changes.",
+    "Forgetting brackets: `=G2*N2*1-H2` subtracts 0.05 from the total instead of taking 5% off. Write `*(1-H2)`.",
+    "Leaving out the `=`. In Excel, `G2*N2` without it is just text."
+  ],
+  "drills": [
+    {
+      "id": "order-value",
+      "ask": "Order O1005 (row 6) is also for the Laptop Pro 14 (price in N2). What's it worth before discount?",
+      "starter": "",
+      "answerCheck": [
+        {
+          "type": "value",
+          "expect": 11691
+        }
+      ],
+      "hint": "Its quantity is in `G6`; the Laptop price is in `N2`. Multiply them with `*`.",
+      "solution": "=G6*N2"
+    },
+    {
+      "id": "brackets",
+      "ask": "Add the first two order quantities (G2 and G3), then double the result, all in one formula.",
+      "starter": "",
+      "answerCheck": [
+        {
+          "type": "value",
+          "expect": 44
+        }
+      ],
+      "hint": "Without brackets only G3 gets doubled. Put the addition in brackets first: `(G2+G3)`.",
+      "solution": "=(G2+G3)*2"
+    },
+    {
+      "id": "difference",
+      "ask": "How many more units were in order O1011 (row 12) than in order O1007 (row 8)?",
+      "starter": "",
+      "answerCheck": [
+        {
+          "type": "value",
+          "expect": 22
+        }
+      ],
+      "hint": "Subtract the smaller quantity from the larger: `G12` minus `G8`.",
+      "solution": "=G12-G8"
+    },
+    {
+      "id": "after-discount",
+      "ask": "Order O1001 (row 2) got the discount in H2. What's it worth **after** the discount? (quantity × price × (1 − discount))",
+      "starter": "",
+      "answerCheck": [
+        {
+          "type": "value",
+          "expect": 12340.5,
+          "tolerance": 0.005
+        }
+      ],
+      "hint": "Discount is a percentage, so what's left is `(1-H2)`. The brackets matter.",
+      "solution": "=G2*N2*(1-H2)"
+    }
+  ],
+  "checkpoint": {
+    "type": "quiz",
+    "passMark": 2,
+    "questions": [
+      {
+        "id": "precedence",
+        "prompt": "What does `=2+3*4` return?",
+        "options": [
+          "20",
+          "14",
+          "24",
+          "9"
+        ],
+        "answer": 1,
+        "explain": "Multiplication first: 3 × 4 = 12, then + 2 = 14.",
+        "verify": "=2+3*4"
+      },
+      {
+        "id": "formula-or-value",
+        "prompt": "A cell shows **1,109**. How can you tell whether it's a formula or a typed value?",
+        "options": [
+          "You can't tell",
+          "Select it and look at the formula bar: a formula starts with =",
+          "Formulas are always bold",
+          "Typed values are always left-aligned"
+        ],
+        "answer": 1,
+        "explain": "The formula bar shows what's really in the cell. That's exactly what a test reviewer checks."
+      }
+    ]
+  },
+  "claimAfter": "I can write formulas that do arithmetic on cells, instead of typing answers in.",
+  "notYet": "Copying a formula down a column safely. That needs `$` absolute references, the next lesson."
+}

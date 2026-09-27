@@ -1,0 +1,201 @@
+{
+  "id": "l3-duplicates-blanks",
+  "level": 3,
+  "order": 1,
+  "title": "Duplicates and blanks",
+  "estMinutes": 15,
+  "dataset": "aegean-messy",
+  "lab": {
+    "panels": [
+      "cleaning"
+    ]
+  },
+  "concept": "From here on you work on a **raw export**: the same Aegean orders, but the way a real system hands them over. It has **11 problems of six kinds**, and none of them shows up as an error. Every formula you've learned still runs; it just gives a wrong answer. `=COUNTA(A2:A183)` counts **{{=COUNTA(A2:A183)}}** orders, but the company took 180.\n\nThe export sits in columns A–H. The reference tables (Products, Reps, Tiers) are where they always were, in J–X, and they're clean.\n\n**Duplicates.** Exports double up rows when a report is run twice or two files are merged. Spot them with `=COUNTIF(A:A,A2)`: anything above 1 means that ID appears again. Remove them with **Remove Duplicates**. Excel compares only the columns you tick, keeps the first row of each group, and deletes the others.\n\n> [!warn] Tick every column (or the ID column). If you tick only Region, Excel keeps one order per region and deletes the other 170-odd rows. Ctrl+Z undoes it; here, **Undo** does.\n\n**Blanks.** A blank Region isn't a reason to delete an order: it really happened, and its revenue would vanish from every total. Don't guess from the row above either. Look it up from a source that's always right. At Aegean, every order's region is its rep's home region, so a VLOOKUP of the rep's **name** in the Reps table fills it: `=VLOOKUP(E59,$Q$2:$R$8,2,FALSE)`. The table starts at **Q** (RepName), because VLOOKUP searches the first column.\n\n> [!excel] Find blanks: Home ▸ Find & Select ▸ Go To Special ▸ Blanks. Type the formula and press **Ctrl+Enter** to fill every selected blank at once. In the lab, use **Find blanks**, then **Formula fill** with *only the blank ones*.",
+  "syntax": [
+    {
+      "signature": "=COUNTIF(A:A, A2)",
+      "args": [
+        {
+          "name": "A:A",
+          "desc": "the whole OrderID column"
+        },
+        {
+          "name": "A2",
+          "desc": "this row's ID. A result above 1 means it's duplicated"
+        }
+      ]
+    },
+    {
+      "signature": "=VLOOKUP(E2, $Q$2:$R$8, 2, FALSE)",
+      "args": [
+        {
+          "name": "E2",
+          "desc": "the rep's name on this order"
+        },
+        {
+          "name": "$Q$2:$R$8",
+          "desc": "RepName → Region, locked so it doesn't drift when filled down"
+        },
+        {
+          "name": "2",
+          "desc": "Region is the 2nd column of Q:R"
+        },
+        {
+          "name": "FALSE",
+          "desc": "exact match: names are IDs here"
+        }
+      ]
+    }
+  ],
+  "worked": {
+    "prompt": "Is order O1034 (row 35) in the export more than once?",
+    "formula": "=COUNTIF(A:A,A35)",
+    "explain": "COUNTIF counts how many cells in column A equal the ID in A35. The answer is **{{=COUNTIF(A:A,A35)}}**: the order appears twice, on rows 35 and 36. Test it in the formula bar: the matches light up green.",
+    "expect": 2
+  },
+  "mistakes": [
+    "Remove Duplicates with only a non-ID column ticked (say Region): Excel keeps the first row per region and deletes real orders.",
+    "Deleting a row because one cell is blank. The order happened; fill the gap instead.",
+    "Filling a blank with a guess (the row above, the most common region). Look it up from a source that's always right.",
+    "`=VLOOKUP(E2,$P$2:$R$8,3,FALSE)` with a rep **name**: column P holds RepIDs, so every lookup is #N/A. Start the table at the column you search (Q)."
+  ],
+  "drills": [
+    {
+      "id": "count-dup",
+      "ask": "How many times does order **O1121** appear in the export? Type a COUNTIF over the OrderID column in the **Formula fill** bar and press **Test**.",
+      "starter": "",
+      "answerCheck": [
+        {
+          "type": "value",
+          "expect": 2
+        },
+        {
+          "type": "formula-uses",
+          "functions": [
+            "COUNTIF"
+          ]
+        }
+      ],
+      "hint": "Count the ID in column A: `=COUNTIF(A:A,\"O1121\")`, or point at one of its cells.",
+      "solution": "=COUNTIF(A:A,\"O1121\")"
+    },
+    {
+      "id": "count-blank",
+      "ask": "How many orders have an **empty Region**? Count the empty cells of D2:D183 with COUNTIF, and **Test** it.",
+      "starter": "",
+      "answerCheck": [
+        {
+          "type": "value",
+          "expect": 2
+        },
+        {
+          "type": "formula-uses",
+          "functions": [
+            "COUNTIF"
+          ]
+        }
+      ],
+      "hint": "An empty criterion, `\"\"`, matches empty cells: `=COUNTIF(D2:D183,\"\")`.",
+      "solution": "=COUNTIF(D2:D183,\"\")"
+    },
+    {
+      "id": "remove-dupes",
+      "ask": "Remove the duplicate orders, keeping one copy of each. Then press **Check**.",
+      "answerCheck": {
+        "type": "cleaning-done",
+        "defects": [
+          {
+            "id": "dup-o1034",
+            "label": "O1034 appears twice (exact duplicate row)"
+          },
+          {
+            "id": "dup-o1121",
+            "label": "O1121 appears twice (exact duplicate row)"
+          }
+        ]
+      },
+      "hint": "Remove duplicates with every column ticked (or just OrderID).",
+      "solution": {
+        "steps": [
+          {
+            "op": "dedupe"
+          }
+        ],
+        "explain": "Remove Duplicates with every column ticked."
+      }
+    },
+    {
+      "id": "fill-blanks",
+      "ask": "Fill each empty **Region** with the region of that order's rep, looked up from the Reps table. Then press **Check**.",
+      "answerCheck": {
+        "type": "cleaning-done",
+        "defects": [
+          {
+            "id": "blank-region-o1057",
+            "label": "O1057 has a blank Region"
+          },
+          {
+            "id": "blank-region-o1098",
+            "label": "O1098 has a blank Region"
+          }
+        ]
+      },
+      "hint": "Formula fill into column D, only the blank cells: `=VLOOKUP(E2,$Q$2:$R$8,2,FALSE)`. Both blank orders belong to the same rep.",
+      "solution": {
+        "steps": [
+          {
+            "op": "fill",
+            "formula": "=VLOOKUP(E2,$Q$2:$R$8,2,FALSE)",
+            "column": "D",
+            "scope": "blanks"
+          }
+        ],
+        "explain": "=VLOOKUP(E2,$Q$2:$R$8,2,FALSE) filled into the blank cells of D."
+      }
+    }
+  ],
+  "checkpoint": {
+    "type": "quiz",
+    "passMark": 3,
+    "questions": [
+      {
+        "id": "dedupe-region",
+        "prompt": "In Remove Duplicates you tick **only Region**. What happens?",
+        "options": [
+          "Excel keeps one row per region and deletes all the others",
+          "Only exact duplicate rows are removed",
+          "Nothing: Region isn't an ID column",
+          "Excel asks which copy to keep"
+        ],
+        "answer": 0,
+        "explain": "Remove Duplicates treats rows as duplicates when the ticked columns match. With only Region ticked, every order after the first in each region is a \"duplicate\", and gets deleted."
+      },
+      {
+        "id": "blank-fix",
+        "prompt": "An order has an **empty Region**. What's the best fix?",
+        "options": [
+          "Delete the row",
+          "Look it up from the rep's home region",
+          "Copy the region from the row above",
+          "Leave it: pivots ignore blanks"
+        ],
+        "answer": 1,
+        "explain": "The order is real, so deleting it loses revenue; the row above is a guess. A pivot doesn't ignore it either: it shows a \"(blank)\" row."
+      },
+      {
+        "id": "countif-2",
+        "prompt": "`=COUNTIF(A:A,A2)` returns **2**. What does it tell you?",
+        "options": [
+          "A2 is on the second row",
+          "There are 2 orders in total",
+          "The ID in A2 appears twice in column A",
+          "A2 is empty"
+        ],
+        "answer": 2,
+        "explain": "COUNTIF counts the cells in A:A equal to A2's ID. 2 means the ID appears twice."
+      }
+    ]
+  },
+  "claimAfter": "I can find and remove duplicate records, and fill blanks from a reliable source instead of guessing.",
+  "notYet": "You haven't standardised text, fixed numbers stored as text, or corrected typos with Find & Replace yet. That's the next lesson."
+}

@@ -1,0 +1,77 @@
+{
+  "id": "l0-checkpoint",
+  "kind": "checkpoint",
+  "level": 0,
+  "dataset": "aegean",
+  "title": "Level 0 checkpoint",
+  "passMark": 4,
+  "intro": "Five questions covering all of Level 0. Get **4 of 5** to pass and unlock Level 1.\n\nIf you miss, you'll get a hint for each wrong answer (not the answer itself), and you can try again as often as you like.",
+  "questions": [
+    {
+      "id": "address",
+      "prompt": "Which cell is in column **C**, row **5**?",
+      "options": [
+        "C5",
+        "5C",
+        "E3",
+        "C:5"
+      ],
+      "answer": 0,
+      "explain": "Column letter first, then row number: `C5`.",
+      "hint": "Which comes first in an address: the letter or the number?"
+    },
+    {
+      "id": "range-count",
+      "prompt": "How many cells does `A1:B5` contain?",
+      "options": [
+        "5",
+        "7",
+        "10",
+        "2"
+      ],
+      "answer": 2,
+      "explain": "2 columns × 5 rows = 10 cells.",
+      "hint": "Count the columns and the rows, then multiply."
+    },
+    {
+      "id": "precedence",
+      "prompt": "On the practice sheet G2 is 10 and G3 is 12. What does `=G2+G3*2` return?",
+      "options": [
+        "34",
+        "44",
+        "22",
+        "24"
+      ],
+      "answer": 0,
+      "explain": "Multiplication first: G3 × 2, then + G2.",
+      "verify": "=G2+G3*2",
+      "hint": "Which happens first, + or *?"
+    },
+    {
+      "id": "copy",
+      "prompt": "You copy `=G2*$N$2` down one row. It becomes…",
+      "options": [
+        "`=G3*$N$2`",
+        "`=G3*$N$3`",
+        "`=G2*$N$2`",
+        "`=H2*$O$2`"
+      ],
+      "answer": 0,
+      "explain": "`G2` is relative, so it moves to `G3`. `$N$2` is locked, so it stays.",
+      "hint": "Which part has the $ signs, and what do they do?"
+    },
+    {
+      "id": "colon",
+      "prompt": "Which formula totals **all 180** quantities in G2 to G181?",
+      "options": [
+        "`=SUM(G2,G181)`",
+        "`=SUM(G2:G181)`",
+        "`=G2+G181`",
+        "`=SUM(G1:G180)`"
+      ],
+      "answer": 1,
+      "explain": "A colon makes a range (every cell between). A comma lists separate cells, so `SUM(G2,G181)` adds just two.",
+      "hint": "Colon or comma: which one means 'everything in between'?"
+    }
+  ]
+}

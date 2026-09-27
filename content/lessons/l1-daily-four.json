@@ -1,0 +1,234 @@
+{
+  "dataset": "aegean",
+  "id": "l1-daily-four",
+  "level": 1,
+  "order": 1,
+  "title": "SUM, AVERAGE, COUNT, COUNTA: the daily four",
+  "estMinutes": 15,
+  "concept": "Most everyday spreadsheet work collapses a column into one number. Four functions do most of it:\n\n- `SUM(range)` adds up the numbers\n- `AVERAGE(range)` gives their mean\n- `COUNT(range)` counts the cells that hold **numbers**\n- `COUNTA(range)` counts the cells that aren't empty, numbers *and* text\n\nCOUNT vs COUNTA is a classic test question. To count *orders*, count something every order has, such as its ID in column A. IDs are text, so that takes **COUNTA**; `COUNT(A2:A181)` gives {{=COUNT(A2:A181)}}. Dates, on the other hand, are numbers, so `COUNT(B2:B181)` counts all {{=COUNT(B2:B181)}} of them.\n\n`ROUND(value, digits)` tidies a result: `ROUND(AVERAGE(G2:G181),1)` is the average to one decimal. Functions nest: the inner one's answer feeds the outer one.\n\n> [!warn] Numbers stored as text (for example `'15`) are **ignored** by SUM, COUNT and AVERAGE. You still get an answer, just a wrong one. Level 3 shows how to find and fix them.",
+  "syntax": [
+    {
+      "signature": "=SUM(range)",
+      "args": [
+        {
+          "name": "range",
+          "desc": "the cells to add, e.g. `G2:G181`"
+        }
+      ]
+    },
+    {
+      "signature": "=AVERAGE(range)",
+      "args": [
+        {
+          "name": "range",
+          "desc": "the cells to average (text and blanks are skipped)"
+        }
+      ]
+    },
+    {
+      "signature": "=COUNT(range)",
+      "args": [
+        {
+          "name": "range",
+          "desc": "counts only the cells holding numbers (dates count: they're numbers)"
+        }
+      ]
+    },
+    {
+      "signature": "=COUNTA(range)",
+      "args": [
+        {
+          "name": "range",
+          "desc": "counts every non-empty cell, text included"
+        }
+      ]
+    },
+    {
+      "signature": "=ROUND(value, digits)",
+      "args": [
+        {
+          "name": "value",
+          "desc": "the number, or formula, to round"
+        },
+        {
+          "name": "digits",
+          "desc": "how many decimal places to keep"
+        }
+      ]
+    }
+  ],
+  "worked": {
+    "prompt": "What's the average order size, to one decimal place?",
+    "formula": "=ROUND(AVERAGE(G2:G181),1)",
+    "explain": "AVERAGE adds the 180 quantities ({{=SUM(G2:G181)}}) and divides by 180: {{=AVERAGE(G2:G181)}}. `ROUND(…,1)` keeps one decimal: **{{=ROUND(AVERAGE(G2:G181),1)}}**.",
+    "expect": 19.5
+  },
+  "mistakes": [
+    "Using COUNT to count orders. The IDs are text, so `COUNT(A2:A181)` is 0; use COUNTA.",
+    "Including the header: `COUNTA(A1:A181)` is 181, because it also counts the heading \"OrderID\".",
+    "Rounding too early. Round the final answer, not each piece before you add them up."
+  ],
+  "drills": [
+    {
+      "id": "total-qty",
+      "ask": "What's the **total quantity** across all 180 orders?",
+      "starter": "",
+      "answerCheck": [
+        {
+          "type": "value",
+          "expect": 3513
+        },
+        {
+          "type": "formula-uses",
+          "functions": [
+            "SUM"
+          ]
+        }
+      ],
+      "hint": "Quantities are in G2:G181. Add them with SUM.",
+      "solution": "=SUM(G2:G181)"
+    },
+    {
+      "id": "count-orders",
+      "ask": "How many orders are there? Count the order **IDs**.",
+      "starter": "",
+      "answerCheck": [
+        {
+          "type": "value",
+          "expect": 180
+        },
+        {
+          "type": "formula-uses",
+          "functions": [
+            "COUNTA"
+          ]
+        }
+      ],
+      "hint": "The IDs in column A are text, so COUNT can't see them. Which function counts text too?",
+      "solution": "=COUNTA(A2:A181)"
+    },
+    {
+      "id": "avg-qty",
+      "ask": "What's the **average** order quantity, rounded to **2** decimals?",
+      "starter": "",
+      "answerCheck": [
+        {
+          "type": "value",
+          "expect": 19.52
+        },
+        {
+          "type": "formula-uses",
+          "functions": [
+            "AVERAGE",
+            "ROUND"
+          ]
+        }
+      ],
+      "hint": "Put `AVERAGE(G2:G181)` inside `ROUND( … , 2)`.",
+      "solution": "=ROUND(AVERAGE(G2:G181),2)"
+    },
+    {
+      "id": "count-numbers",
+      "ask": "How many cells in the product table `J1:N15` contain **numbers**?",
+      "starter": "",
+      "answerCheck": [
+        {
+          "type": "value",
+          "expect": 28
+        },
+        {
+          "type": "formula-uses",
+          "functions": [
+            "COUNT"
+          ]
+        }
+      ],
+      "hint": "Only the cost and price columns are numbers. COUNT skips the IDs, names, categories and headers.",
+      "solution": "=COUNT(J1:N15)"
+    },
+    {
+      "id": "count-dates",
+      "ask": "How many order **dates** are there in `B2:B181`? Use COUNT.",
+      "starter": "",
+      "answerCheck": [
+        {
+          "type": "value",
+          "expect": 180
+        },
+        {
+          "type": "formula-uses",
+          "functions": [
+            "COUNT"
+          ]
+        }
+      ],
+      "hint": "Dates are stored as numbers, so COUNT counts them.",
+      "solution": "=COUNT(B2:B181)"
+    },
+    {
+      "id": "first-ten",
+      "ask": "What's the total quantity of the **first 10 orders** (rows 2 to 11)?",
+      "starter": "",
+      "answerCheck": [
+        {
+          "type": "value",
+          "expect": 105
+        },
+        {
+          "type": "formula-uses",
+          "functions": [
+            "SUM"
+          ]
+        }
+      ],
+      "hint": "Orders 1–10 sit in rows 2–11, so the range is `G2:G11`.",
+      "solution": "=SUM(G2:G11)"
+    }
+  ],
+  "checkpoint": {
+    "type": "quiz",
+    "passMark": 2,
+    "questions": [
+      {
+        "id": "count-text",
+        "prompt": "What does `=COUNT(A2:A181)` return on the practice sheet?",
+        "options": [
+          "0",
+          "180",
+          "181",
+          "#VALUE!"
+        ],
+        "answer": 0,
+        "explain": "Column A holds order IDs, which are text. COUNT only counts numbers.",
+        "verify": "=COUNT(A2:A181)"
+      },
+      {
+        "id": "counta",
+        "prompt": "Which function counts every non-empty cell, text included?",
+        "options": [
+          "COUNT",
+          "COUNTA",
+          "SUM",
+          "AVERAGE"
+        ],
+        "answer": 1,
+        "explain": "COUNTA counts anything that isn't empty; COUNT counts numbers only."
+      },
+      {
+        "id": "round",
+        "prompt": "What does `=ROUND(3.14159,2)` return?",
+        "options": [
+          "3.14",
+          "3.1",
+          "3.142",
+          "3"
+        ],
+        "answer": 0,
+        "explain": "The 2 means two decimal places.",
+        "verify": "=ROUND(3.14159,2)"
+      }
+    ]
+  },
+  "claimAfter": "I can total, average and count a column, and I know when to use COUNT vs COUNTA.",
+  "notYet": "Totals and counts with conditions, such as only Attica or only orders over 10. That's SUMIF/SUMIFS and COUNTIF/COUNTIFS, coming next."
+}

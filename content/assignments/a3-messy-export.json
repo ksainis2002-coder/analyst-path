@@ -1,0 +1,228 @@
+{
+  "id": "a3-messy-export",
+  "kind": "assignment",
+  "level": 3,
+  "title": "Assignment 3: From messy export to one-slide answer",
+  "dataset": "aegean-messy",
+  "lab": {
+    "panels": [
+      "cleaning",
+      "pivot",
+      "chart"
+    ]
+  },
+  "intro": "**The brief.** Your manager forwards the raw 2025 order export: \"Before Monday's meeting I need one slide: **where is our revenue coming from now?** The export's a mess, so clean it first.\"\n\nThe export (A–H) has **11 problems of six kinds**: duplicated orders, blank regions, inconsistent region text, quantities stored as text, a mistyped product ID, and a date in the wrong year. Nobody will tell you which rows; finding them is part of the job. The reference tables in J–X are clean.\n\nWork in the three panels below: clean, then pivot, then chart. The tasks are checked from your workspace when you submit. The pass mark is **8/8**, and you can resubmit as often as you like. Your moves are saved as you go, so a reload loses nothing.\n\n> [!tip] A move that breaks good data (a Remove Duplicates on the wrong column, a Find & Replace with no scope) fails every cleaning task until you Undo it. And remember what the last lesson taught about pivots and data that changes.",
+  "passMark": 8,
+  "key": "assignments/a3-messy-export.key.json",
+  "tasks": [
+    {
+      "id": "duplicates",
+      "ask": "**Remove the duplicated orders.**",
+      "answerCheck": {
+        "type": "cleaning-done",
+        "defects": [
+          {
+            "id": "dup-o1034",
+            "label": "a duplicated order"
+          },
+          {
+            "id": "dup-o1121",
+            "label": "a duplicated order"
+          }
+        ]
+      },
+      "hint": "COUNTIF on the OrderID column finds them; Remove Duplicates removes them. Tick every column."
+    },
+    {
+      "id": "blanks",
+      "ask": "**Fill the blank regions**, from each order's rep (not a guess).",
+      "answerCheck": {
+        "type": "cleaning-done",
+        "defects": [
+          {
+            "id": "blank-region-o1057",
+            "label": "a blank Region"
+          },
+          {
+            "id": "blank-region-o1098",
+            "label": "a blank Region"
+          }
+        ]
+      },
+      "hint": "Find blanks in column D, then fill only the blanks with a lookup of the rep's name in Q:R."
+    },
+    {
+      "id": "region-text",
+      "ask": "**Standardise the region names** (no stray spaces, a capital first letter).",
+      "answerCheck": {
+        "type": "cleaning-done",
+        "defects": [
+          {
+            "id": "spaces-o1012",
+            "label": "a region with stray spaces or the wrong case"
+          },
+          {
+            "id": "caps-o1076",
+            "label": "a region with stray spaces or the wrong case"
+          },
+          {
+            "id": "lower-o1140",
+            "label": "a region with stray spaces or the wrong case"
+          }
+        ]
+      },
+      "hint": "One formula, filled down D and pasted as values, fixes both the spaces and the case."
+    },
+    {
+      "id": "quantities",
+      "ask": "**Make every quantity a real number.**",
+      "answerCheck": {
+        "type": "cleaning-done",
+        "defects": [
+          {
+            "id": "text-qty-o1045",
+            "label": "a quantity stored as text"
+          },
+          {
+            "id": "text-qty-o1150",
+            "label": "a quantity stored as text"
+          }
+        ]
+      },
+      "hint": "Look for green corners in column G."
+    },
+    {
+      "id": "typo-and-date",
+      "ask": "**Fix the mistyped product ID and the date in the wrong year.**",
+      "answerCheck": {
+        "type": "cleaning-done",
+        "defects": [
+          {
+            "id": "typo-product-o1088",
+            "label": "a mistyped ProductID"
+          },
+          {
+            "id": "future-date-o1170",
+            "label": "a date in the wrong year"
+          }
+        ]
+      },
+      "hint": "A ProductID that isn't in the price list shows up in the pivot's note. Sorting by Date, newest first, surfaces the other."
+    },
+    {
+      "id": "pivot",
+      "ask": "**Pivot:** Region down the side, Quarter across the top, Sum of Revenue, on the **cleaned** data.",
+      "answerCheck": {
+        "type": "pivot-state",
+        "expect": {
+          "rows": "Region",
+          "columns": "Quarter",
+          "value": "Revenue",
+          "agg": "sum",
+          "showAs": "none",
+          "filter": null
+        },
+        "tolerance": 0.01,
+        "totals": {
+          "Attica": 124579.85,
+          "Crete": 53863.1,
+          "Macedonia": 109794.75,
+          "Peloponnese": 60894.55,
+          "Thessaly": 42716.25,
+          "Grand Total": 391848.5
+        },
+        "colTotals": {
+          "Qtr1": 117706.1,
+          "Qtr2": 99985.25,
+          "Qtr3": 60354.65,
+          "Qtr4": 113802.5
+        }
+      },
+      "hint": "Insert it after cleaning, or Refresh it after your last cleaning move. Rows: Region; Columns: Date → Quarters; Values: Sum of Revenue; no filter."
+    },
+    {
+      "id": "chart",
+      "ask": "**Chart Qtr4 revenue by region** so the leader stands out: a fitting chart type, sorted, with a title that states the finding.",
+      "answerCheck": {
+        "type": "story",
+        "series": "Qtr4",
+        "chart": [
+          "column",
+          "bar"
+        ],
+        "sort": "desc",
+        "titleMentions": [
+          "Macedonia"
+        ]
+      },
+      "hint": "Chart the Qtr4 series of your pivot, largest first. The title should name the region that leads Qtr4, not just describe the axes."
+    },
+    {
+      "id": "insight",
+      "ask": "**The one-sentence answer.** Fill in the blanks from your pivot (the share to one decimal place).",
+      "story": {
+        "sentence": "In Qtr4, {top} brought in the most revenue: €{amount}, {share}% of the quarter's total, while the full-year leader, {leader}, brought in only €{leaderAmount}.",
+        "blanks": {
+          "top": {
+            "type": "choice",
+            "options": [
+              "Attica",
+              "Crete",
+              "Macedonia",
+              "Peloponnese",
+              "Thessaly"
+            ],
+            "label": "Qtr4 leader"
+          },
+          "amount": {
+            "type": "number",
+            "label": "Qtr4 revenue of that region"
+          },
+          "share": {
+            "type": "number",
+            "label": "share of Qtr4 (%)",
+            "size": 5
+          },
+          "leader": {
+            "type": "choice",
+            "options": [
+              "Attica",
+              "Crete",
+              "Macedonia",
+              "Peloponnese",
+              "Thessaly"
+            ],
+            "label": "full-year leader"
+          },
+          "leaderAmount": {
+            "type": "number",
+            "label": "full-year leader's Qtr4 revenue"
+          }
+        }
+      },
+      "answerCheck": {
+        "type": "story",
+        "blanks": {
+          "top": "Macedonia",
+          "amount": {
+            "expect": 48781.8,
+            "tolerance": 1,
+            "label": "Qtr4 revenue of the leading region"
+          },
+          "share": {
+            "expect": 42.87,
+            "tolerance": 0.1,
+            "label": "share of Qtr4 revenue"
+          },
+          "leader": "Attica",
+          "leaderAmount": {
+            "expect": 17139.75,
+            "tolerance": 1,
+            "label": "full-year leader's Qtr4 revenue"
+          }
+        }
+      },
+      "hint": "Qtr4's leader and its share come from the Qtr4 column (share = its cell ÷ the Qtr4 total). The full-year leader has the biggest Grand Total; read its Qtr4 cell."
+    }
+  ]
+}

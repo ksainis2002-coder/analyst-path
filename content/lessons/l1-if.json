@@ -1,0 +1,162 @@
+{
+  "dataset": "aegean",
+  "id": "l1-if",
+  "level": 1,
+  "order": 2,
+  "title": "IF: make the sheet decide",
+  "estMinutes": 12,
+  "concept": "`IF` makes a decision: *if this test is true, show this; otherwise, show that.*\n\n`=IF(G2>10,\"HIGH\",\"OK\")` reads: is the quantity in G2 more than 10? If yes, show HIGH; if not, show OK.\n\nThe test is a comparison:\n\n- `>` more than · `<` less than\n- `>=` at least · `<=` at most\n- `=` equals · `<>` does **not** equal\n\nText goes in \"double quotes\" (`\"Attica\"`); numbers and cell references don't. Text comparisons ignore upper and lower case, so `D2=\"attica\"` is TRUE when D2 says Attica.\n\nThe two results can be text, numbers, cells or whole calculations: `=IF(G2>=15,G2*2,0)`.\n\n> [!tip] Read an IF aloud as a sentence before you type it. If the sentence doesn't make sense, the formula won't either.",
+  "syntax": [
+    {
+      "signature": "=IF(logical_test, value_if_true, value_if_false)",
+      "args": [
+        {
+          "name": "logical_test",
+          "desc": "a comparison that's TRUE or FALSE, e.g. `G2>10`"
+        },
+        {
+          "name": "value_if_true",
+          "desc": "what to show when it's TRUE"
+        },
+        {
+          "name": "value_if_false",
+          "desc": "what to show when it's FALSE"
+        }
+      ]
+    }
+  ],
+  "worked": {
+    "prompt": "Label order O1011 (row 12) as HIGH if its quantity is over 10, otherwise OK.",
+    "formula": "=IF(G12>10,\"HIGH\",\"OK\")",
+    "explain": "G12 is {{=G12}}. {{=G12}} > 10 is TRUE, so IF returns its first result: **{{=IF(G12>10,\"HIGH\",\"OK\")}}**.",
+    "expect": "HIGH"
+  },
+  "mistakes": [
+    "No quotes around text: `IF(G2>10,HIGH,OK)` gives #NAME?, because Excel thinks HIGH is the name of something.",
+    "Quotes around numbers: `\"10\"` is the text 10, not the number.",
+    "Writing `=>` instead of `>=`. The order is fixed: `>=` and `<=`."
+  ],
+  "drills": [
+    {
+      "id": "label-row8",
+      "ask": "Label order O1007 (row 8): `\"HIGH\"` if its quantity is over 10, otherwise `\"OK\"`.",
+      "starter": "",
+      "answerCheck": [
+        {
+          "type": "value",
+          "expect": "OK"
+        },
+        {
+          "type": "formula-uses",
+          "functions": [
+            "IF"
+          ]
+        }
+      ],
+      "hint": "The quantity is in G8, so the test is `G8>10`. Text results go in quotes.",
+      "solution": "=IF(G8>10,\"HIGH\",\"OK\")"
+    },
+    {
+      "id": "is-attica",
+      "ask": "Is order O1005 (row 6) from **Attica**? Return `\"Yes\"` or `\"No\"`.",
+      "starter": "",
+      "answerCheck": [
+        {
+          "type": "value",
+          "expect": "No"
+        },
+        {
+          "type": "formula-uses",
+          "functions": [
+            "IF"
+          ]
+        }
+      ],
+      "hint": "The region is in column D. Compare it with the text `\"Attica\"`.",
+      "solution": "=IF(D6=\"Attica\",\"Yes\",\"No\")"
+    },
+    {
+      "id": "at-least-15",
+      "ask": "Order O1004 is on row 5. If its quantity is **at least** 15, return the quantity doubled; otherwise return 0.",
+      "starter": "",
+      "answerCheck": [
+        {
+          "type": "value",
+          "expect": 30
+        },
+        {
+          "type": "formula-uses",
+          "functions": [
+            "IF"
+          ]
+        }
+      ],
+      "hint": "\"At least\" includes 15 itself, so use `>=`. The TRUE result can be a calculation: `G5*2`.",
+      "solution": "=IF(G5>=15,G5*2,0)"
+    },
+    {
+      "id": "not-online",
+      "ask": "For order O1003 (row 4), return `\"Other\"` if the channel is **not** Online, otherwise `\"Online\"`.",
+      "starter": "",
+      "answerCheck": [
+        {
+          "type": "value",
+          "expect": "Other"
+        },
+        {
+          "type": "formula-uses",
+          "functions": [
+            "IF"
+          ]
+        }
+      ],
+      "hint": "The channel is in column F. \"Not equal\" is `<>`: `F4<>\"Online\"`.",
+      "solution": "=IF(F4<>\"Online\",\"Other\",\"Online\")"
+    }
+  ],
+  "checkpoint": {
+    "type": "quiz",
+    "passMark": 2,
+    "questions": [
+      {
+        "id": "boundary",
+        "prompt": "What does `=IF(G2>10,\"HIGH\",\"OK\")` return when G2 is exactly 10?",
+        "options": [
+          "HIGH",
+          "OK",
+          "#VALUE!",
+          "10"
+        ],
+        "answer": 1,
+        "explain": "10 > 10 is FALSE (10 isn't *more* than 10), so IF returns the second result. For \"at least\" you'd use `>=`.",
+        "verify": "=IF(G2>10,\"HIGH\",\"OK\")"
+      },
+      {
+        "id": "not-equal",
+        "prompt": "Which comparison means \"not equal to\"?",
+        "options": [
+          "`!=`",
+          "`<>`",
+          "`=/=`",
+          "`><`"
+        ],
+        "answer": 1,
+        "explain": "Excel writes \"not equal\" as `<>`."
+      },
+      {
+        "id": "name-error",
+        "prompt": "Why does `=IF(G2>10,HIGH,OK)` return #NAME?",
+        "options": [
+          "IF needs four arguments",
+          "HIGH and OK need double quotes",
+          "G2 is empty",
+          "`>` should be `=>`"
+        ],
+        "answer": 1,
+        "explain": "Without quotes, Excel reads HIGH and OK as names, can't find them, and returns #NAME?."
+      }
+    ]
+  },
+  "claimAfter": "I can make a sheet choose between two results with IF and a comparison.",
+  "notYet": "Combining several conditions (AND, OR, nested IFs). Level 1 sticks to one test at a time."
+}

@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="The Analyst Path">
+  <!-- Brand colours from css/tokens.css: ink #191813, paper #f7f5ef, clay #c2683a (search), green #2f7d5b (match), blue #3a5fa8 (return) -->
+  <rect width="64" height="64" rx="14" fill="#191813"/>
+  <rect x="10" y="12" width="44" height="12" rx="3" fill="#c2683a"/>
+  <rect x="10" y="26" width="44" height="12" rx="3" fill="#2f7d5b"/>
+  <rect x="10" y="40" width="44" height="12" rx="3" fill="#3a5fa8"/>
+  <path d="M22 12v40M42 12v40" stroke="#191813" stroke-width="2.5"/>
+</svg>

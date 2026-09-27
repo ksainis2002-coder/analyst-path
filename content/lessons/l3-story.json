@@ -1,0 +1,262 @@
+{
+  "id": "l3-story",
+  "level": 3,
+  "order": 6,
+  "title": "One chart, one sentence",
+  "estMinutes": 15,
+  "dataset": "aegean",
+  "lab": {
+    "panels": [
+      "pivot",
+      "chart"
+    ]
+  },
+  "concept": "The last step turns a correct table into something a manager acts on. A hiring test marks three decisions.\n\n**1. The right chart for the question.**\n- Comparing categories (regions, reps, channels): **columns or bars**, sorted largest first, so the ranking reads at a glance.\n- Change over time (months, quarters): a **line**, left to right in time order. Never sort time by value.\n- A pie only for a few parts of one whole (two or three slices). Past that, readers can't compare the angles.\n\n**2. A title that states the finding.** \"Revenue by region\" describes the axes; \"Macedonia now brings in the most revenue\" tells the reader what to take away. Highlight the bar the title is about, and leave the rest quiet.\n\n**3. One sentence with the number.** Who or what, how much, compared with what: \"In Qtr4, X brought in €Y, Z% of the quarter's revenue.\"\n\n> [!excel] Click the pivot ▸ PivotTable Analyze ▸ **PivotChart**. It stays linked: refresh the pivot and the chart follows. Chart Design ▸ Change Chart Type; click the title to type your finding. Sheets: select the pivot ▸ Insert ▸ Chart.",
+  "worked": {
+    "prompt": "How did revenue move month by month?",
+    "pivot": {
+      "rows": "Month",
+      "columns": "",
+      "value": "Revenue",
+      "agg": "sum",
+      "showAs": "none",
+      "filter": null
+    },
+    "story": {
+      "series": "Grand Total",
+      "chart": "line",
+      "sort": "none",
+      "highlight": "",
+      "title": "Revenue peaked in March and slumped in August",
+      "blanks": {}
+    },
+    "explain": "Month in Rows (Date grouped by Months), Sum of Revenue; a line, in month order. The title says what happened, not what's plotted. Press the button to build it in the lab."
+  },
+  "mistakes": [
+    "A pie with five or more slices: bars compare sizes far better.",
+    "Sorting quarters or months by value: time must stay in order.",
+    "An axis-label title (\"Revenue by region\"). Say the finding.",
+    "A sentence with no number, or a number with no comparison."
+  ],
+  "drills": [
+    {
+      "id": "trend",
+      "ask": "Show how **total revenue moved across the year**, quarter by quarter: build the pivot, pick the right chart and order. Then press **Check**.",
+      "answerCheck": [
+        {
+          "type": "pivot-state",
+          "expect": {
+            "rows": "Quarter",
+            "columns": "",
+            "value": "Revenue",
+            "agg": "sum",
+            "showAs": "none",
+            "filter": null
+          },
+          "tolerance": 0.01
+        },
+        {
+          "type": "story",
+          "series": "Grand Total",
+          "chart": [
+            "line",
+            "column"
+          ],
+          "data": "time",
+          "sort": "none"
+        }
+      ],
+      "hint": "Rows: Date → Quarters, Sum of Revenue. Change over time → a line (or columns), kept in quarter order.",
+      "solution": {
+        "pivot": {
+          "rows": "Quarter",
+          "columns": "",
+          "value": "Revenue",
+          "agg": "sum",
+          "showAs": "none",
+          "filter": null
+        },
+        "story": {
+          "series": "Grand Total",
+          "chart": "line",
+          "sort": "none",
+          "highlight": "",
+          "title": "",
+          "blanks": {}
+        }
+      }
+    },
+    {
+      "id": "rank-regions",
+      "ask": "Compare the **regions' full-year revenue** so the leader jumps out: the right chart, the right order, and a title that states the finding. Then press **Check**.",
+      "answerCheck": [
+        {
+          "type": "pivot-state",
+          "expect": {
+            "rows": "Region",
+            "columns": "",
+            "value": "Revenue",
+            "agg": "sum",
+            "showAs": "none",
+            "filter": null
+          },
+          "tolerance": 0.01
+        },
+        {
+          "type": "story",
+          "series": "Grand Total",
+          "chart": [
+            "column",
+            "bar"
+          ],
+          "sort": "desc",
+          "titleMentions": [
+            "Attica"
+          ]
+        }
+      ],
+      "hint": "Rows: Region, Sum of Revenue. Columns or bars, largest first. The title names the region that leads.",
+      "solution": {
+        "pivot": {
+          "rows": "Region",
+          "columns": "",
+          "value": "Revenue",
+          "agg": "sum",
+          "showAs": "none",
+          "filter": null
+        },
+        "story": {
+          "series": "Grand Total",
+          "chart": "bar",
+          "sort": "desc",
+          "highlight": "Attica",
+          "title": "Attica brought in the most revenue in 2025",
+          "blanks": {}
+        }
+      }
+    },
+    {
+      "id": "margin-sentence",
+      "ask": "Which **channel** earned the most **Margin**? Pivot it, chart it, and finish the sentence. Then press **Check**.",
+      "story": {
+        "sentence": "{top} earned the most margin: €{amount}, {share}% of all margin.",
+        "blanks": {
+          "top": {
+            "type": "choice",
+            "options": [
+              "Online",
+              "Field",
+              "Partner"
+            ],
+            "label": "channel"
+          },
+          "amount": {
+            "type": "number",
+            "label": "margin in euros"
+          },
+          "share": {
+            "type": "number",
+            "label": "share (%, one decimal)",
+            "size": 5
+          }
+        }
+      },
+      "answerCheck": [
+        {
+          "type": "pivot-state",
+          "expect": {
+            "rows": "Channel",
+            "value": "Margin"
+          }
+        },
+        {
+          "type": "story",
+          "chart": [
+            "column",
+            "bar"
+          ],
+          "blanks": {
+            "top": "Online",
+            "amount": {
+              "expect": 70863.7,
+              "tolerance": 1,
+              "label": "margin in euros"
+            },
+            "share": {
+              "expect": 51.86,
+              "tolerance": 0.1,
+              "label": "share"
+            }
+          }
+        }
+      ],
+      "hint": "Rows: Channel, Values: Margin (Sum). For the share, switch Show Values As to % of Grand Total, read it, and round to one decimal.",
+      "solution": {
+        "pivot": {
+          "rows": "Channel",
+          "columns": "",
+          "value": "Margin",
+          "agg": "sum",
+          "showAs": "none",
+          "filter": null
+        },
+        "story": {
+          "series": "Grand Total",
+          "chart": "column",
+          "sort": "desc",
+          "highlight": "Online",
+          "title": "Online earns the most margin",
+          "blanks": {
+            "top": "Online",
+            "amount": "70,863.7",
+            "share": "51.9"
+          }
+        }
+      }
+    }
+  ],
+  "checkpoint": {
+    "type": "quiz",
+    "passMark": 3,
+    "questions": [
+      {
+        "id": "trend-chart",
+        "prompt": "Revenue for each of 12 months, to show the trend. Best chart?",
+        "options": [
+          "A pie",
+          "Bars sorted largest first",
+          "A donut",
+          "A line, in month order"
+        ],
+        "answer": 3,
+        "explain": "Change over time is a line in time order. Sorting months by value hides the trend."
+      },
+      {
+        "id": "finding-title",
+        "prompt": "Which is a **finding** title?",
+        "options": [
+          "Macedonia overtook Attica in Qtr4",
+          "Revenue by region, Qtr4",
+          "Chart 1",
+          "Qtr4 revenue (€)"
+        ],
+        "answer": 0,
+        "explain": "A finding says what the reader should take away. The others only label the axes."
+      },
+      {
+        "id": "why-sort",
+        "prompt": "A bar chart of five regions' revenue: why sort it largest first?",
+        "options": [
+          "Excel requires it",
+          "So the ranking reads at a glance",
+          "It makes the chart smaller",
+          "Sorting changes the totals"
+        ],
+        "answer": 1,
+        "explain": "Sorting changes nothing in the data; it puts the answer where the eye starts."
+      }
+    ]
+  },
+  "claimAfter": "I can pick the right chart, title it with the finding, and write the one-sentence insight.",
+  "notYet": "You haven't done it all end to end on messy data yet: that's Assignment 3. Doing it against the clock is the mock test."
+}

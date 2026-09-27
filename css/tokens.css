@@ -1,0 +1,159 @@
+/* =========================================================================
+   tokens.css: the single source of design truth (spec §5.2, §10.1)
+   -------------------------------------------------------------------------
+   Every colour, font, size, space, radius and shadow value lives here as a
+   CSS custom property. base.css and components.css only use var(--…).
+   No hex, rgb() or font name appears outside this file.
+
+   COLOURS MEAN THINGS. They follow the engine's search → match → return
+   story. The formula engine (js/engine.js) returns highlights as
+   {cell, role}, and each role maps to exactly one token pair below:
+
+     role     token                          meaning
+     -------  -----------------------------  -------------------------------------
+     scan     --role-scan-bg                 a cell the engine looked at while searching
+     search   --role-search-* (clay)         the value being looked up
+     match    --role-match-*  (green)        where the lookup / criterion matched
+     return   --role-return-* (blue)         the cell whose value came back / was summed
+
+   Outside the console, the same hues keep the same meaning:
+     green = correct / passed / complete     clay  = attention, the thing to look at
+     plum  = structure (navigation, open)    warn  = errors (#N/A, #REF!, …)
+   Don't use green for decoration or clay for success. That would break the
+   meaning the whole app teaches.
+   ========================================================================= */
+
+:root {
+  /* ---- Paper & ink ---- */
+  --paper: #f7f5ef;          /* page background: cream paper */
+  --card: #fffdf8;           /* raised surfaces */
+  --surface-raised: #fdfbf5; /* rows / chips on a card */
+  --surface-sunk: #efe9dc;   /* wells, tracks, sheet row/col headers */
+  --ink: #191813;            /* primary text */
+  --ink-soft: #57534a;       /* secondary text (AA on paper) */
+  --ink-faint: #736e63;      /* tertiary text (AA: 4.65 on paper, 4.99 on card). v1 #8a857a was 3.4, below AA */
+  --line: #e4dfd2;           /* hairlines, cell borders */
+  --line-strong: #cdc6b4;    /* control borders, grid motif */
+
+  /* ---- Identity ---- */
+  --plum: #5b4b8a;           /* primary / structure */
+  --plum-soft: #e9e4f4;
+  --plum-ink: #3d3168;       /* plum text on plum-soft */
+  --clay: #c2683a;           /* search / attention (edges, fills; NOT small text) */
+  --clay-soft: #f6e6da;
+  --clay-ink: #8f4a24;       /* clay-family text that passes AA */
+  --green: #2f7d5b;          /* correct / match / complete */
+  --green-soft: #d9ede2;
+  --green-ink: #22503c;
+  --blue: #3a5fa8;           /* returned value */
+  --blue-soft: #dde6f5;
+  --warn: #a8321f;           /* errors */
+  --warn-soft: #f6e3df;
+
+  /* ---- The dark formula chip & sheet header (motif) ---- */
+  --chip-bg: #26241f;
+  --chip-bg-2: #3b362d;
+  --chip-ink: #f1ede4;
+  --chip-ink-soft: #b4ad9d;
+  --chip-accent: #e2a86e;    /* argument colour inside the chip */
+  /* Syntax-chip argument colours (v1). In lookup signatures they line up with the roles:
+     1st arg = what you search for (clay), 2nd = where it matches (green), 3rd = what's returned (blue). */
+  --syn-1: #e2a86e;
+  --syn-2: #84cba3;
+  --syn-3: #93b6ea;
+  --syn-4: #d98ea0;
+  --sheet-head-bg: #2f2d27;
+  --sheet-head-ink: #eee7d9;
+
+  /* ---- Semantic: engine highlight roles (see table above) ---- */
+  --role-scan-bg: #faf1e8;
+  --role-search-bg: var(--clay-soft);
+  --role-search-edge: var(--clay);
+  --role-match-bg: var(--green-soft);
+  --role-match-edge: var(--green);
+  --role-return-bg: var(--blue-soft);
+  --role-return-edge: var(--blue);
+
+  /* ---- Semantic: charts (Level 3 story) ----
+     One series = plum (structure). The item the sentence is about = clay
+     ("the thing to look at"); the rest step back. Never green: green means correct. */
+  --chart-series: var(--plum);
+  --chart-accent: var(--clay);
+  --chart-dim: #b8b0cf;      /* plum, stepped back (3.1:1 against card, still a visible mark) */
+  --chart-axis: var(--line-strong);
+  --chart-label: var(--ink-soft);
+  --chart-surface: var(--card);
+  --textnum-mark: var(--green); /* Excel's green "number stored as text" triangle: it IS Excel's colour, kept literal */
+
+  /* ---- Semantic: status ---- */
+  --status-complete: var(--green);
+  --status-complete-soft: var(--green-soft);
+  --status-open: var(--plum);
+  --status-open-soft: var(--plum-soft);
+  --status-locked: var(--ink-faint);
+  --status-locked-soft: var(--surface-sunk);
+  --status-error: var(--warn);
+  --status-error-soft: var(--warn-soft);
+  --focus-ring: var(--clay);
+
+  /* ---- Motif: faint spreadsheet grid ---- */
+  --grid-line: rgba(205, 198, 180, 0.45);
+  --grid-cell-w: 140px;
+  --grid-cell-h: 44px;
+  --ghost-number: rgba(91, 75, 138, 0.09); /* the "ghosted big number" behind a level title */
+  --rail-bg: rgba(247, 245, 239, 0.92);     /* sticky rail over scrolled content */
+
+  /* ---- Type ---- */
+  --font-display: "Fraunces", Georgia, "Times New Roman", serif;   /* display, used with restraint */
+  --font-body: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace; /* formulas & cell refs: semantic */
+
+  --text-2xs: 0.6875rem;  /* 11px: mono eyebrows */
+  --text-xs: 0.75rem;     /* 12px */
+  --text-sm: 0.8125rem;   /* 13px */
+  --text-base: 0.9375rem; /* 15px */
+  --text-md: 1.0625rem;   /* 17px */
+  --text-lg: 1.375rem;    /* 22px */
+  --text-xl: 2rem;        /* 32px */
+  --text-display: clamp(2.25rem, 6vw, 3.75rem);
+  --text-ghost: clamp(7rem, 22vw, 15rem);
+
+  --leading: 1.62;
+  --leading-tight: 1.1;
+  --tracking-caps: 0.14em;
+  --tracking-display: -0.015em;
+  --weight-regular: 400;
+  --weight-medium: 500;
+  --weight-semibold: 600;
+
+  /* ---- Space (4px base) ---- */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-7: 3rem;
+  --space-8: 4.5rem;
+  --gutter: 1.5rem;
+  --rail-h: 58px;            /* sticky rail height; the console sticks just below it */
+  --sheet-max-h: 440px;      /* sheet scrolls inside this height (v1 value) */
+  --page-max: 1120px;
+  --measure: 68ch;
+
+  /* ---- Shape & depth ---- */
+  --radius-sm: 7px;
+  --radius: 12px;
+  --radius-pill: 100px;
+  --border: 1px solid var(--line);
+  --shadow: 0 1px 2px rgba(25, 24, 19, 0.05), 0 10px 30px rgba(25, 24, 19, 0.06);
+
+  /* ---- Motion ---- */
+  --duration: 0.2s;
+  --duration-slow: 0.35s;
+  --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+@media (max-width: 640px) {
+  :root { --gutter: 1rem; }
+}

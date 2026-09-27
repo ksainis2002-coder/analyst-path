@@ -1,0 +1,229 @@
+{
+  "id": "l3-pivot-refresh",
+  "level": 3,
+  "order": 5,
+  "title": "Refresh: the classic gotcha",
+  "estMinutes": 12,
+  "dataset": "aegean-messy",
+  "lab": {
+    "panels": [
+      "cleaning",
+      "pivot"
+    ]
+  },
+  "concept": "An Excel pivot doesn't read your data live. When you insert it, Excel takes a **snapshot** (the pivot cache) and the pivot summarises that. Fix the data afterwards and the pivot keeps showing the **old numbers**, with no warning, until you **Refresh** it.\n\nHiring tests love this: \"the source data has been corrected; update the summary.\" Someone who doesn't refresh hands in the old answer.\n\n> [!excel] Right-click anywhere in the pivot ▸ **Refresh**, or PivotTable Analyze ▸ Refresh (Alt+F5). Refresh All (Ctrl+Alt+F5) updates every pivot in the workbook.\n\n> [!note] Google Sheets pivots update by themselves when the data changes. That's convenient, but don't carry the habit into Excel.\n\nIt also shows **why you clean first**. A pivot on the raw export gets a **(blank)** row for the empty regions, and `\" attica \"` as a separate row next to Attica. (It groups CRETE and crete with Crete, because pivots ignore case, but not spaces.)\n\nIn this lab the pivot sits under the cleaning tools, on the same export: insert it, clean, and watch what doesn't happen.",
+  "worked": {
+    "prompt": "Revenue by Region, straight from the raw export.",
+    "pivot": {
+      "rows": "Region",
+      "columns": "",
+      "value": "Revenue",
+      "agg": "sum",
+      "showAs": "none",
+      "filter": null
+    },
+    "explain": "Look at the row labels: ` attica ` and `(blank)` are data problems showing up as rows. Pressing the button inserts the pivot on the data as it is now."
+  },
+  "mistakes": [
+    "Cleaning the data and assuming the pivot followed. In Excel it didn't: Refresh.",
+    "Rebuilding the pivot from scratch every time: Refresh does it in one click.",
+    "Building the pivot before cleaning, then forgetting it's there. Clean first, pivot second, refresh after any later change."
+  ],
+  "drills": [
+    {
+      "id": "raw-pivot",
+      "ask": "Before cleaning anything, **insert a pivot** of Revenue by Region on the raw export. Then press **Check**. (Already cleaned? Press Start over first.)",
+      "answerCheck": {
+        "type": "pivot-state",
+        "expect": {
+          "rows": "Region",
+          "columns": "",
+          "value": "Revenue",
+          "agg": "sum",
+          "showAs": "none",
+          "filter": null
+        },
+        "tolerance": 0.01,
+        "totals": {
+          "(blank)": 4392,
+          " attica ": 3843
+        }
+      },
+      "hint": "Insert ▸ PivotTable, then Rows: Region and Values: Sum of Revenue, with no cleaning moves made yet.",
+      "solution": {
+        "pivot": {
+          "rows": "Region",
+          "columns": "",
+          "value": "Revenue",
+          "agg": "sum",
+          "showAs": "none",
+          "filter": null
+        }
+      }
+    },
+    {
+      "id": "clean-regions",
+      "ask": "Now fix the **Region** column: fill the blanks from the rep, and standardise the text. Then press **Check**.",
+      "answerCheck": {
+        "type": "cleaning-done",
+        "defects": [
+          {
+            "id": "blank-region-o1057",
+            "label": "O1057 has a blank Region"
+          },
+          {
+            "id": "blank-region-o1098",
+            "label": "O1098 has a blank Region"
+          },
+          {
+            "id": "spaces-o1012",
+            "label": "O1012 Region has stray spaces and lower case"
+          },
+          {
+            "id": "caps-o1076",
+            "label": "O1076 Region is in capitals"
+          },
+          {
+            "id": "lower-o1140",
+            "label": "O1140 Region is in lower case"
+          }
+        ]
+      },
+      "hint": "Two formula fills into D: `=VLOOKUP(E2,$Q$2:$R$8,2,FALSE)` into the blanks, then `=TRIM(PROPER(D2))` into every row.",
+      "solution": {
+        "steps": [
+          {
+            "op": "fill",
+            "formula": "=VLOOKUP(E2,$Q$2:$R$8,2,FALSE)",
+            "column": "D",
+            "scope": "blanks"
+          },
+          {
+            "op": "fill",
+            "formula": "=TRIM(PROPER(D2))",
+            "column": "D",
+            "scope": "all"
+          }
+        ],
+        "explain": "The rep lookup into the blanks, then TRIM(PROPER()) down D."
+      }
+    },
+    {
+      "id": "refresh",
+      "ask": "Make the pivot show the **corrected** regions: five rows, and the right total for Attica. Then press **Check**.",
+      "answerCheck": [
+        {
+          "type": "cleaning-done",
+          "defects": [
+            {
+              "id": "blank-region-o1057",
+              "label": "O1057 has a blank Region"
+            },
+            {
+              "id": "blank-region-o1098",
+              "label": "O1098 has a blank Region"
+            },
+            {
+              "id": "spaces-o1012",
+              "label": "O1012 Region has stray spaces and lower case"
+            },
+            {
+              "id": "caps-o1076",
+              "label": "O1076 Region is in capitals"
+            },
+            {
+              "id": "lower-o1140",
+              "label": "O1140 Region is in lower case"
+            }
+          ]
+        },
+        {
+          "type": "pivot-state",
+          "expect": {
+            "rows": "Region",
+            "columns": "",
+            "value": "Revenue",
+            "agg": "sum",
+            "showAs": "none",
+            "filter": null
+          },
+          "tolerance": 0.01,
+          "totals": {
+            "Attica": 124579.85
+          }
+        }
+      ],
+      "hint": "The data is fixed but the pivot still shows the snapshot from when you inserted it. Refresh it.",
+      "solution": {
+        "steps": [
+          {
+            "op": "fill",
+            "formula": "=VLOOKUP(E2,$Q$2:$R$8,2,FALSE)",
+            "column": "D",
+            "scope": "blanks"
+          },
+          {
+            "op": "fill",
+            "formula": "=TRIM(PROPER(D2))",
+            "column": "D",
+            "scope": "all"
+          }
+        ],
+        "pivot": {
+          "rows": "Region",
+          "columns": "",
+          "value": "Revenue",
+          "agg": "sum",
+          "showAs": "none",
+          "filter": null
+        },
+        "refresh": true,
+        "explain": "the Region fixes, then Refresh (the pivot re-reads the cleaned data)."
+      }
+    }
+  ],
+  "checkpoint": {
+    "type": "quiz",
+    "passMark": 3,
+    "questions": [
+      {
+        "id": "stale",
+        "prompt": "You correct the data under an Excel pivot. The pivot…",
+        "options": [
+          "keeps the old numbers until you Refresh",
+          "updates immediately",
+          "shows #REF! until you refresh",
+          "deletes itself"
+        ],
+        "answer": 0,
+        "explain": "Excel pivots summarise a snapshot (the cache). Refresh re-reads the data."
+      },
+      {
+        "id": "refresh-where",
+        "prompt": "Where is Refresh in Excel?",
+        "options": [
+          "Data ▸ Remove Duplicates",
+          "Right-click the pivot ▸ Refresh (or PivotTable Analyze ▸ Refresh)",
+          "Formulas ▸ Calculate Now",
+          "File ▸ Save"
+        ],
+        "answer": 1,
+        "explain": "Calculate Now (F9) recalculates formulas, not pivots."
+      },
+      {
+        "id": "sheets",
+        "prompt": "In Google Sheets, a pivot table…",
+        "options": [
+          "needs Refresh, like Excel",
+          "can't be filtered",
+          "updates by itself when the data changes",
+          "can't group dates"
+        ],
+        "answer": 2,
+        "explain": "Sheets pivots are live. The Refresh habit matters in Excel, which most hiring tests use."
+      }
+    ]
+  },
+  "claimAfter": "I know pivots don't update themselves, and I refresh them after the data changes.",
+  "notYet": "You haven't turned a pivot into a chart and a one-sentence finding yet."
+}

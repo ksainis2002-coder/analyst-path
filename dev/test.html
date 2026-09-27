@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Tests · The Analyst Path</title>
+  <link rel="stylesheet" href="../css/tokens.css">
+  <link rel="stylesheet" href="../css/base.css">
+  <link rel="stylesheet" href="../css/components.css">
+</head>
+<body>
+  <main class="container view stack">
+    <p class="eyebrow">Developer page · not part of the app</p>
+    <h1>Test suites</h1>
+    <p class="lede">Runs every suite in this browser: engine, router, progress, grader, UI helpers and the DOM tests for the console, lessons, assignments and the Level 3 workbench (the DOM tests only run here). The content tests read files from disk, so they run in Node: <code>node js/content.test.js</code>. <a href="../index.html">← Back to the app</a></p>
+    <p id="status" class="notice">Running…</p>
+    <pre id="out" class="card" style="white-space:pre-wrap;overflow:auto"></pre>
+  </main>
+  <script type="module">
+    const out = document.getElementById("out"), status = document.getElementById("status");
+    try {
+      const engine = await import("../js/engine.test.js");
+      await import("../js/router.test.js");
+      await import("../js/progress.test.js");
+      await import("../js/grader.test.js");
+      await import("../js/ui/ui.test.js");
+      await (await import("../js/ui/models.test.js")).done;
+      await (await import("../js/ui/ui.dom.test.js")).done;
+      await (await import("../js/ui/lesson.dom.test.js")).done;
+      await (await import("../js/ui/assignment.dom.test.js")).done;
+      await (await import("../js/ui/workbench.dom.test.js")).done;
+      await (await import("../js/ui/capstone.dom.test.js")).done;
+      await (await import("../js/ui/report.dom.test.js")).done;
+      const reports = [
+        { title: "engine", total: engine.summary.total, failed: engine.summary.failed,
+          lines: [`— engine —`, ...engine.summary.results.filter(r => !r.ok).map(r => `    ✗ ${r.group}: ${r.name}\n      ${r.err}`),
+                  `${engine.summary.total - engine.summary.failed}/${engine.summary.total} passed · ${engine.summary.failed ? "FAIL" : "ALL GREEN"}`] },
+        ...(globalThis.__TEST_REPORTS || []),
+      ];
+      out.textContent = reports.map(r => r.lines.join("\n")).join("\n\n");
+      const total = reports.reduce((n, r) => n + r.total, 0), failed = reports.reduce((n, r) => n + r.failed, 0);
+      status.textContent = `${total - failed}/${total} tests passed across ${reports.length} suites${failed ? ` · ${failed} FAILED` : " · all green"}`;
+      status.className = failed ? "notice notice--warn" : "notice";
+      document.body.dataset.status = failed ? "fail" : "pass";
+      document.body.dataset.total = total; document.body.dataset.failed = failed;
+    } catch (e) {
+      status.textContent = "The test page itself crashed: " + e.message; status.className = "notice notice--warn";
+      document.body.dataset.status = "error"; console.error(e);
+    }
+  </script>
+</body>
+</html>

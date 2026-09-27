@@ -1,0 +1,223 @@
+{
+  "id": "l3-pivot-build",
+  "level": 3,
+  "order": 3,
+  "title": "Pivot tables: rows, columns, values",
+  "estMinutes": 15,
+  "dataset": "aegean",
+  "lab": {
+    "panels": [
+      "pivot"
+    ]
+  },
+  "concept": "A pivot table is **many SUMIFS at once**. Instead of writing one formula per region, you tell Excel which field goes down the side (**Rows**), which goes across the top (**Columns**, optional), and which number to summarise (**Values**), and it builds the whole table. The quantity a pivot shows for Crete is exactly `=SUMIFS(G2:G181,D2:D181,\"Crete\")`: **{{=SUMIFS(G2:G181,D2:D181,\"Crete\")}}**.\n\nThis pivot reads the clean order log, plus two **helper columns** an analyst adds first, using the Level 2 formulas: **Revenue** = Quantity × ListPrice × (1 − Discount), and **Margin** = Revenue − Quantity × UnitCost. Both are wrapped in IFERROR, so the one order for a product that isn't priced yet (P015) counts as 0.\n\n**Summarize Values By** decides what happens to the numbers: Sum, Count, Average, Max, Min. Text fields can only be counted: drop OrderID into Values and Excel counts it (a sum of IDs would be 0).\n\n**Group dates** to answer \"by quarter\" or \"by month\": right-click a date ▸ **Group** ▸ Quarters. Excel labels them Qtr1–Qtr4.\n\n> [!excel] Insert ▸ PivotTable ▸ OK, then drag fields into the Rows, Columns and Values boxes. Sheets: Insert ▸ Pivot table, then Add under Rows, Columns and Values.",
+  "worked": {
+    "prompt": "Total revenue by region.",
+    "pivot": {
+      "rows": "Region",
+      "columns": "",
+      "value": "Revenue",
+      "agg": "sum",
+      "showAs": "none",
+      "filter": null
+    },
+    "explain": "Region in Rows, Revenue in Values, summarised by Sum. Five rows, one per region, and a Grand Total that equals the revenue of every order. Press the button to build it in the lab."
+  },
+  "mistakes": [
+    "Summing a text field: Sum of OrderID is 0. Count it instead.",
+    "Rows and Columns swapped: the numbers are right but the table reads the wrong way round.",
+    "Typing quarters by hand in a new column: group the Date field instead."
+  ],
+  "drills": [
+    {
+      "id": "by-channel",
+      "ask": "Build a pivot of **total Revenue by Channel**, then press **Check**.",
+      "answerCheck": {
+        "type": "pivot-state",
+        "expect": {
+          "rows": "Channel",
+          "columns": "",
+          "value": "Revenue",
+          "agg": "sum",
+          "showAs": "none",
+          "filter": null
+        },
+        "tolerance": 0.01,
+        "totals": {
+          "Field": 88445.8,
+          "Online": 209664.7,
+          "Partner": 93738,
+          "Grand Total": 391848.5
+        }
+      },
+      "hint": "Rows: Channel. Values: Revenue, summarised by Sum.",
+      "solution": {
+        "pivot": {
+          "rows": "Channel",
+          "columns": "",
+          "value": "Revenue",
+          "agg": "sum",
+          "showAs": "none",
+          "filter": null
+        }
+      }
+    },
+    {
+      "id": "orders-per-rep",
+      "ask": "How many **orders** did each rep take? Build the pivot, then press **Check**.",
+      "answerCheck": {
+        "type": "pivot-state",
+        "expect": {
+          "rows": "Rep",
+          "columns": "",
+          "value": "OrderID",
+          "agg": "count",
+          "showAs": "none",
+          "filter": null
+        },
+        "tolerance": 0.01,
+        "totals": {
+          "Dimitra Georgiou": 24,
+          "Eleni Makri": 30,
+          "Giorgos Nikolaou": 23,
+          "Kostas Alexiou": 17,
+          "Maria Ioannou": 29,
+          "Nikos Petrou": 26,
+          "Sofia Papadaki": 31,
+          "Grand Total": 180
+        }
+      },
+      "hint": "Rows: Rep. Values: OrderID, summarised by Count.",
+      "solution": {
+        "pivot": {
+          "rows": "Rep",
+          "columns": "",
+          "value": "OrderID",
+          "agg": "count",
+          "showAs": "none",
+          "filter": null
+        }
+      }
+    },
+    {
+      "id": "avg-qty-category",
+      "ask": "What's the **average Quantity** per order in each product **Category**? Build it, then press **Check**.",
+      "answerCheck": {
+        "type": "pivot-state",
+        "expect": {
+          "rows": "Category",
+          "columns": "",
+          "value": "Quantity",
+          "agg": "average",
+          "showAs": "none",
+          "filter": null
+        },
+        "tolerance": 0.01,
+        "totals": {
+          "Computers": 9.97,
+          "Furniture": 8.15,
+          "Peripherals": 22.95,
+          "Printing": 31.04,
+          "(blank)": 6,
+          "Grand Total": 19.52
+        }
+      },
+      "hint": "Rows: Category. Values: Quantity, summarised by Average. (A (blank) category row is P015's order: that product isn't in the price list yet.)",
+      "solution": {
+        "pivot": {
+          "rows": "Category",
+          "columns": "",
+          "value": "Quantity",
+          "agg": "average",
+          "showAs": "none",
+          "filter": null
+        }
+      }
+    },
+    {
+      "id": "region-quarter",
+      "ask": "Revenue with **Region down the side and Quarter across the top**. Build it, then press **Check**.",
+      "answerCheck": {
+        "type": "pivot-state",
+        "expect": {
+          "rows": "Region",
+          "columns": "Quarter",
+          "value": "Revenue",
+          "agg": "sum",
+          "showAs": "none",
+          "filter": null
+        },
+        "tolerance": 0.01,
+        "totals": {
+          "Attica": 124579.85,
+          "Crete": 53863.1,
+          "Macedonia": 109794.75,
+          "Peloponnese": 60894.55,
+          "Thessaly": 42716.25,
+          "Grand Total": 391848.5
+        },
+        "colTotals": {
+          "Qtr1": 117706.1,
+          "Qtr2": 99985.25,
+          "Qtr3": 60354.65,
+          "Qtr4": 113802.5
+        }
+      },
+      "hint": "Rows: Region. Columns: Date → Quarters. Values: Sum of Revenue.",
+      "solution": {
+        "pivot": {
+          "rows": "Region",
+          "columns": "Quarter",
+          "value": "Revenue",
+          "agg": "sum",
+          "showAs": "none",
+          "filter": null
+        }
+      }
+    }
+  ],
+  "checkpoint": {
+    "type": "quiz",
+    "passMark": 3,
+    "questions": [
+      {
+        "id": "pivot-sumifs",
+        "prompt": "A pivot shows **Sum of Quantity** for Crete. Which formula gives the same number?",
+        "options": [
+          "=COUNTIF(D2:D181,\"Crete\")",
+          "=SUMIF(G2:G181,\"Crete\",D2:D181)",
+          "=SUMIFS(G2:G181,D2:D181,\"Crete\")",
+          "=VLOOKUP(\"Crete\",D2:G181,4,FALSE)"
+        ],
+        "answer": 2,
+        "explain": "A pivot cell is a SUMIFS: add the quantities where the region is Crete. COUNTIF counts orders; the SUMIF has its ranges the wrong way round; VLOOKUP returns one order only."
+      },
+      {
+        "id": "orderid-count",
+        "prompt": "You put **OrderID** in Values. How should it be summarised?",
+        "options": [
+          "Sum",
+          "Average",
+          "Max",
+          "Count"
+        ],
+        "answer": 3,
+        "explain": "IDs are text. Counting them counts orders; summing text gives 0."
+      },
+      {
+        "id": "group-quarters",
+        "prompt": "How do you get quarters from the Date field in an Excel pivot?",
+        "options": [
+          "Right-click a date ▸ Group ▸ Quarters",
+          "Type Qtr1–Qtr4 into a new column by hand",
+          "Format the dates as quarters",
+          "Sort the pivot by date"
+        ],
+        "answer": 0,
+        "explain": "Grouping is built in. In Sheets: right-click ▸ Create pivot date group ▸ Quarter."
+      }
+    ]
+  },
+  "claimAfter": "I can build a pivot table, choose how it summarises, and group dates by quarter.",
+  "notYet": "You haven't filtered a pivot, shown values as a % of the total, or refreshed one after its data changed."
+}

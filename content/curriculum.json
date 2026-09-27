@@ -1,0 +1,130 @@
+{
+  "schema": 1,
+  "_note": "Level spine (spec §7). levels[].lessons lists lesson ids → content/lessons/<id>.json; gate.content points at the gate's file. Adding a lesson = a JSON file + its id here; no code change.",
+  "title": "The Analyst Path",
+  "levels": [
+    {
+      "id": "level-0",
+      "number": 0,
+      "badge": "0",
+      "label": "Level 0",
+      "title": "Orientation",
+      "summary": "Cell references, ranges, typing a value vs a formula, and $ absolute references, because everything later depends on them.",
+      "estimate": "30 min",
+      "requires": null,
+      "gate": {
+        "taskId": "l0-checkpoint",
+        "kind": "checkpoint",
+        "label": "Level 0 checkpoint (5 questions)",
+        "content": "assignments/l0-checkpoint.json"
+      },
+      "claimAfter": "Comfortable navigating a sheet and writing basic formulas.",
+      "lessons": [
+        "l0-cells-ranges",
+        "l0-formulas-values",
+        "l0-absolute-refs"
+      ]
+    },
+    {
+      "id": "level-1",
+      "number": 1,
+      "badge": "1",
+      "label": "Level 1",
+      "title": "The daily four + logic",
+      "summary": "SUM, AVERAGE, COUNT and COUNTA; then IF, SUMIF → SUMIFS, COUNTIF → COUNTIFS and IFERROR, including the argument-order trap and quoted criteria.",
+      "estimate": "2–3 sessions",
+      "requires": "l0-checkpoint",
+      "gate": {
+        "taskId": "a1-sales-summary",
+        "kind": "assignment",
+        "label": "Assignment 1: Sales summary",
+        "content": "assignments/a1-sales-summary.json"
+      },
+      "claimAfter": "I can summarise and conditionally aggregate transactional data.",
+      "lessons": [
+        "l1-daily-four",
+        "l1-if",
+        "l1-sumif-sumifs",
+        "l1-countif-countifs",
+        "l1-iferror"
+      ]
+    },
+    {
+      "id": "level-2",
+      "number": 2,
+      "badge": "2",
+      "label": "Level 2",
+      "title": "Lookups",
+      "summary": "VLOOKUP exact and approximate, locking the table, XLOOKUP (and its version caveat), INDEX/MATCH for reverse lookups, and lookups inside arithmetic.",
+      "estimate": "3 sessions",
+      "requires": "a1-sales-summary",
+      "gate": {
+        "taskId": "a2-enrich-orders",
+        "kind": "assignment",
+        "label": "Assignment 2: Enrich the order log",
+        "content": "assignments/a2-enrich-orders.json"
+      },
+      "claimAfter": "I can join tables with VLOOKUP, XLOOKUP and INDEX/MATCH, in any direction.",
+      "lessons": [
+        "l2-vlookup",
+        "l2-exact-approx",
+        "l2-xlookup",
+        "l2-index-match",
+        "l2-lookup-math"
+      ]
+    },
+    {
+      "id": "level-3",
+      "number": 3,
+      "badge": "3",
+      "label": "Level 3",
+      "title": "Clean & summarise like an analyst",
+      "summary": "Remove duplicates, fill blanks, standardise text, fix numbers stored as text and typos; build, filter and refresh pivots; then turn the result into one chart and one sentence.",
+      "estimate": "2–3 sessions",
+      "requires": "a2-enrich-orders",
+      "gate": {
+        "taskId": "a3-messy-export",
+        "kind": "assignment",
+        "label": "Assignment 3: From messy export to one-slide answer",
+        "content": "assignments/a3-messy-export.json"
+      },
+      "claimAfter": "I can take a raw export, clean it, pivot it, and communicate the finding.",
+      "lessons": [
+        "l3-duplicates-blanks",
+        "l3-standardise",
+        "l3-pivot-build",
+        "l3-pivot-filter-pct",
+        "l3-pivot-refresh",
+        "l3-story"
+      ]
+    },
+    {
+      "id": "capstone",
+      "number": null,
+      "badge": "★",
+      "label": "Capstone",
+      "title": "The mock hiring test",
+      "summary": "10 tasks spanning every level, under a 45-minute countdown, auto-graded, with the answer key only after you submit. Two variants, so a retake tests skills, not memory.",
+      "estimate": "45 min, timed",
+      "requires": "a3-messy-export",
+      "gate": {
+        "taskId": "mock-test",
+        "kind": "mock-test",
+        "label": "Mock hiring test",
+        "content": "assignments/mock-test.json"
+      },
+      "claimAfter": "You can sit a timed, mixed Excel test and finish it correctly under time — the thing the hiring test actually measures.",
+      "lessons": []
+    }
+  ],
+  "cases": [
+    {
+      "id": "case-a",
+      "title": "Case A: Q3 sales review for the boss",
+      "summary": "Clean the export, enrich it with lookups, pivot revenue by region and by rep, and write the two-sentence finding: which region carried Q3, and who is furthest behind target.",
+      "estimate": "30–40 min",
+      "requires": "a3-messy-export",
+      "content": "cases/case-a.json"
+    }
+  ]
+}

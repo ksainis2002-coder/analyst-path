@@ -1,0 +1,200 @@
+{
+  "dataset": "aegean",
+  "id": "l1-countif-countifs",
+  "level": 1,
+  "order": 4,
+  "title": "COUNTIF → COUNTIFS: conditional counts",
+  "estMinutes": 12,
+  "concept": "`COUNTIF` counts the rows that meet a condition; `COUNTIFS` counts the rows that meet **all** of several. There's no range to add up, so the argument-order trap doesn't apply: it's always *range, criteria* pairs.\n\n`=COUNTIF(D2:D181,\"Crete\")` asks how many orders came from Crete ({{=COUNTIF(D2:D181,\"Crete\")}}).\n`=COUNTIFS(D2:D181,\"Attica\",F2:F181,\"Partner\")` asks how many Attica orders came through partners ({{=COUNTIFS(D2:D181,\"Attica\",F2:F181,\"Partner\")}}).\n\n**Quoting criteria** is where people slip:\n\n- text: `\"Crete\"`\n- a comparison: `\">=15\"`, `\"<5\"`, `\"<>Attica\"`. The operator goes *inside* the quotes\n- a value from a cell: just the cell, e.g. `D2`, to count rows equal to whatever D2 holds\n\n> [!tip] A COUNTIFS divided by the COUNTA of all the rows gives a share: what fraction of orders were big Attica orders?",
+  "syntax": [
+    {
+      "signature": "=COUNTIF(range, criteria)",
+      "args": [
+        {
+          "name": "range",
+          "desc": "where to test the condition"
+        },
+        {
+          "name": "criteria",
+          "desc": "the condition in quotes, or a cell"
+        }
+      ]
+    },
+    {
+      "signature": "=COUNTIFS(criteria_range1, criteria1, criteria_range2, criteria2, …)",
+      "args": [
+        {
+          "name": "criteria_range1",
+          "desc": "where to test the first condition"
+        },
+        {
+          "name": "criteria1",
+          "desc": "the first condition"
+        },
+        {
+          "name": "criteria_range2",
+          "desc": "where to test the second condition"
+        },
+        {
+          "name": "criteria2",
+          "desc": "the second condition; a row is counted only if it meets every condition"
+        }
+      ]
+    }
+  ],
+  "worked": {
+    "prompt": "How many orders were for 25 units or more?",
+    "formula": "=COUNTIF(G2:G181,\">=25\")",
+    "explain": "COUNTIF tests every quantity against `>=25`, and **{{=COUNTIF(G2:G181,\">=25\")}}** pass. Note {{=COUNTIF(G2:G181,25)}} of them are *exactly* 25, which `\">25\"` would miss.",
+    "expect": 56
+  },
+  "mistakes": [
+    "The operator outside the quotes: `COUNTIF(G2:G181,>=15)` is an error; write `\">=15\"`.",
+    "`\">15\"` when the question says \"at least 15\". That leaves out the 15s.",
+    "Including the header row. Test only the data rows."
+  ],
+  "drills": [
+    {
+      "id": "thessaly-count",
+      "ask": "How many orders came from **Thessaly**?",
+      "starter": "",
+      "answerCheck": [
+        {
+          "type": "value",
+          "expect": 17
+        },
+        {
+          "type": "formula-uses",
+          "functions": [
+            "COUNTIF"
+          ]
+        }
+      ],
+      "hint": "`COUNTIF(the region column, \"Thessaly\")`.",
+      "solution": "=COUNTIF(D2:D181,\"Thessaly\")"
+    },
+    {
+      "id": "under-5",
+      "ask": "How many orders were for **fewer than 5** units?",
+      "starter": "",
+      "answerCheck": [
+        {
+          "type": "value",
+          "expect": 26
+        },
+        {
+          "type": "formula-uses",
+          "functions": [
+            "COUNTIF"
+          ]
+        }
+      ],
+      "hint": "\"Fewer than 5\" is `\"<5\"`.",
+      "solution": "=COUNTIF(G2:G181,\"<5\")"
+    },
+    {
+      "id": "attica-partner",
+      "ask": "How many **Attica** orders came through the **Partner** channel?",
+      "starter": "",
+      "answerCheck": [
+        {
+          "type": "value",
+          "expect": 6
+        },
+        {
+          "type": "formula-uses",
+          "functions": [
+            "COUNTIFS"
+          ]
+        }
+      ],
+      "hint": "Two conditions, so COUNTIFS: the region pair, then the channel pair.",
+      "solution": "=COUNTIFS(D2:D181,\"Attica\",F2:F181,\"Partner\")"
+    },
+    {
+      "id": "makri-10",
+      "ask": "How many of **Eleni Makri**'s orders were for **10 or more** units?",
+      "starter": "",
+      "answerCheck": [
+        {
+          "type": "value",
+          "expect": 21
+        },
+        {
+          "type": "formula-uses",
+          "functions": [
+            "COUNTIFS"
+          ]
+        }
+      ],
+      "hint": "\"10 or more\" is `\">=10\"`, alongside the rep condition.",
+      "solution": "=COUNTIFS(E2:E181,\"Eleni Makri\",G2:G181,\">=10\")"
+    },
+    {
+      "id": "same-region",
+      "ask": "How many orders share the region of order O1001? Use its cell **D2** as the criteria rather than typing the region.",
+      "starter": "",
+      "answerCheck": [
+        {
+          "type": "value",
+          "expect": 56
+        },
+        {
+          "type": "formula-uses",
+          "functions": [
+            "COUNTIF"
+          ],
+          "refs": [
+            "D2"
+          ]
+        }
+      ],
+      "hint": "The criteria can be a cell: `COUNTIF(D2:D181, D2)`.",
+      "solution": "=COUNTIF(D2:D181,D2)"
+    }
+  ],
+  "checkpoint": {
+    "type": "quiz",
+    "passMark": 2,
+    "questions": [
+      {
+        "id": "at-least",
+        "prompt": "Which formula counts orders of **at least** 15 units?",
+        "options": [
+          "`=COUNTIF(G2:G181,\">=15\")`",
+          "`=COUNTIF(G2:G181,\">15\")`",
+          "`=COUNTIF(G2:G181,>=15)`",
+          "`=COUNT(G2:G181,\">=15\")`"
+        ],
+        "answer": 0,
+        "explain": "\"At least\" includes 15 itself, so `>=`, and the whole comparison goes in quotes."
+      },
+      {
+        "id": "attica-25",
+        "prompt": "What does `=COUNTIFS(D2:D181,\"Attica\",G2:G181,\">=25\")` return on the practice sheet?",
+        "options": [
+          "56",
+          "16",
+          "19"
+        ],
+        "answer": 2,
+        "explain": "Only rows that are Attica AND have 25 or more units are counted.",
+        "verify": "=COUNTIFS(D2:D181,\"Attica\",G2:G181,\">=25\")"
+      },
+      {
+        "id": "if-vs-ifs",
+        "prompt": "What's the difference between COUNTIF and COUNTIFS?",
+        "options": [
+          "COUNTIFS only counts text",
+          "COUNTIF takes one condition; COUNTIFS takes one or more, and a row must meet all of them",
+          "COUNTIFS adds numbers up",
+          "There's no difference"
+        ],
+        "answer": 1,
+        "explain": "COUNTIFS counts a row only when every range/criteria pair is true for that row."
+      }
+    ]
+  },
+  "claimAfter": "I can count the rows that meet one or several conditions, with correctly quoted criteria.",
+  "notYet": "Counting *distinct* values (how many different products sold?). That needs a pivot table (Level 3) or newer functions."
+}

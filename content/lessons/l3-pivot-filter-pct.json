@@ -1,0 +1,231 @@
+{
+  "id": "l3-pivot-filter-pct",
+  "level": 3,
+  "order": 4,
+  "title": "Filter and % of total",
+  "estMinutes": 12,
+  "dataset": "aegean",
+  "lab": {
+    "panels": [
+      "pivot"
+    ]
+  },
+  "concept": "**Filters** keep only some of the data in the pivot, without deleting anything. Drag a field into **Filters** and tick the items you want: Channel = Online, or Quarter = Qtr4. The Grand Total then covers only what's left. **Slicers** (Insert ▸ Slicer) are the same filter as clickable buttons, handy on a dashboard.\n\n**Show Values As** turns amounts into shares, which is usually what the question really asks:\n- **% of Grand Total**: each cell's share of everything. \"What share of the year's revenue came from Attica?\"\n- **% of Column Total**: each cell's share of its column. With Quarter across the top: \"within Qtr4, which region contributed most?\"\n- **% of Row Total**: each cell's share of its row. \"How was Attica's revenue spread over the year?\"\n\n> [!tip] Pick the base the sentence uses. \"… % of **Q4** revenue\" is a column share; \"% of **the year's** revenue\" is a grand-total share.\n\n> [!excel] Right-click a value ▸ Show Values As ▸ % of Grand Total. Sheets: in the Values box, Show as ▸ % of grand total.",
+  "worked": {
+    "prompt": "Each channel's share of the year's revenue.",
+    "pivot": {
+      "rows": "Channel",
+      "columns": "",
+      "value": "Revenue",
+      "agg": "sum",
+      "showAs": "pct-grand",
+      "filter": null
+    },
+    "explain": "Channel in Rows, Sum of Revenue, with Show Values As set to % of Grand Total. The three shares add up to 100%, and Online has by far the biggest one."
+  },
+  "mistakes": [
+    "Leaving a filter on from an earlier question: every total is quietly partial. Check the Filters box.",
+    "% of Grand Total when the question is \"within each quarter\": that needs % of Column Total, with Quarter in Columns.",
+    "Filtering by deleting rows from the data: filter the pivot instead."
+  ],
+  "drills": [
+    {
+      "id": "online-only",
+      "ask": "Revenue by Region, for **Online** orders only. Use the Filter. Then press **Check**.",
+      "answerCheck": {
+        "type": "pivot-state",
+        "expect": {
+          "rows": "Region",
+          "columns": "",
+          "value": "Revenue",
+          "agg": "sum",
+          "showAs": "none",
+          "filter": {
+            "field": "Channel",
+            "values": [
+              "Online"
+            ]
+          }
+        },
+        "tolerance": 0.01,
+        "totals": {
+          "Attica": 77434.35,
+          "Crete": 22589.35,
+          "Macedonia": 76264.8,
+          "Peloponnese": 22766.5,
+          "Thessaly": 10609.7,
+          "Grand Total": 209664.7
+        }
+      },
+      "hint": "Filter: Channel, with only Online ticked. Rows: Region. Values: Sum of Revenue.",
+      "solution": {
+        "pivot": {
+          "rows": "Region",
+          "columns": "",
+          "value": "Revenue",
+          "agg": "sum",
+          "showAs": "none",
+          "filter": {
+            "field": "Channel",
+            "values": [
+              "Online"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "share-of-year",
+      "ask": "Show each region's **share of the whole year's revenue**. Then press **Check**.",
+      "answerCheck": {
+        "type": "pivot-state",
+        "expect": {
+          "rows": "Region",
+          "columns": "",
+          "value": "Revenue",
+          "agg": "sum",
+          "showAs": "pct-grand",
+          "filter": null
+        },
+        "tolerance": 0.0001,
+        "totals": {
+          "Attica": 0.317929,
+          "Crete": 0.137459,
+          "Macedonia": 0.280197,
+          "Peloponnese": 0.155403,
+          "Thessaly": 0.109012,
+          "Grand Total": 1
+        }
+      },
+      "hint": "Rows: Region, Sum of Revenue, Show Values As: % of Grand Total.",
+      "solution": {
+        "pivot": {
+          "rows": "Region",
+          "columns": "",
+          "value": "Revenue",
+          "agg": "sum",
+          "showAs": "pct-grand",
+          "filter": null
+        }
+      }
+    },
+    {
+      "id": "share-in-quarter",
+      "ask": "Region down the side, Quarter across the top, showing each region's **share of that quarter's revenue**. Then press **Check**.",
+      "answerCheck": {
+        "type": "pivot-state",
+        "expect": {
+          "rows": "Region",
+          "columns": "Quarter",
+          "value": "Revenue",
+          "agg": "sum",
+          "showAs": "pct-col",
+          "filter": null
+        },
+        "tolerance": 0.0001,
+        "cells": {
+          "Macedonia|Qtr4": 0.428653,
+          "Attica|Qtr1": 0.394361
+        }
+      },
+      "hint": "Columns: Date → Quarters, Show Values As: % of Column Total. Each quarter's column then adds to 100%.",
+      "solution": {
+        "pivot": {
+          "rows": "Region",
+          "columns": "Quarter",
+          "value": "Revenue",
+          "agg": "sum",
+          "showAs": "pct-col",
+          "filter": null
+        }
+      }
+    },
+    {
+      "id": "q4-orders-by-channel",
+      "ask": "How many orders came through each **Channel** in **Qtr4**? Then press **Check**.",
+      "answerCheck": {
+        "type": "pivot-state",
+        "expect": {
+          "rows": "Channel",
+          "columns": "",
+          "value": "OrderID",
+          "agg": "count",
+          "showAs": "none",
+          "filter": {
+            "field": "Quarter",
+            "values": [
+              "Qtr4"
+            ]
+          }
+        },
+        "tolerance": 0.01,
+        "totals": {
+          "Field": 22,
+          "Online": 26,
+          "Partner": 14,
+          "Grand Total": 62
+        }
+      },
+      "hint": "Filter: Quarter = Qtr4. Rows: Channel. Values: OrderID, Count.",
+      "solution": {
+        "pivot": {
+          "rows": "Channel",
+          "columns": "",
+          "value": "OrderID",
+          "agg": "count",
+          "showAs": "none",
+          "filter": {
+            "field": "Quarter",
+            "values": [
+              "Qtr4"
+            ]
+          }
+        }
+      }
+    }
+  ],
+  "checkpoint": {
+    "type": "quiz",
+    "passMark": 3,
+    "questions": [
+      {
+        "id": "pct-base",
+        "prompt": "\"What share of **Q4** revenue came from each region?\" With Quarter in Columns, which Show Values As?",
+        "options": [
+          "% of Grand Total",
+          "% of Column Total",
+          "% of Row Total",
+          "No Calculation"
+        ],
+        "answer": 1,
+        "explain": "Each Q4 cell divided by the Q4 column total. % of Grand Total would divide by the whole year."
+      },
+      {
+        "id": "filter-total",
+        "prompt": "A filter on Channel = Online is on. The pivot's Grand Total is…",
+        "options": [
+          "All revenue, as before",
+          "Online revenue as a percentage",
+          "Online revenue only",
+          "Unchanged until you refresh"
+        ],
+        "answer": 2,
+        "explain": "A filter changes what the pivot adds up, including the Grand Total."
+      },
+      {
+        "id": "slicer",
+        "prompt": "A slicer is…",
+        "options": [
+          "a chart type",
+          "a way to split one cell into two",
+          "Excel's name for the Rows area",
+          "a filter shown as clickable buttons"
+        ],
+        "answer": 3,
+        "explain": "Insert ▸ Slicer. Clicking a button filters the pivot (and any chart built on it)."
+      }
+    ]
+  },
+  "claimAfter": "I can filter a pivot and show values as a share of the right total.",
+  "notYet": "You haven't seen a pivot go out of date. Refresh is next, and it's the classic test gotcha."
+}

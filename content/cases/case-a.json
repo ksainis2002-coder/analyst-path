@@ -1,0 +1,381 @@
+{
+  "id": "case-a",
+  "kind": "case",
+  "title": "Case A: Q3 sales review for the boss",
+  "estMinutes": 35,
+  "requires": "a3-messy-export",
+  "dataset": "aegean-messy",
+  "lab": {
+    "panels": [
+      "cleaning",
+      "pivot",
+      "chart"
+    ]
+  },
+  "intro": "It's the first week of October. Your manager writes: \"Q3 review on Friday. I need two things on one slide: **which region carried Q3**, and **which rep is furthest behind target so far this year**. The system export is attached; it's the usual mess.\"\n\nThis is one piece of work in six steps, the way a real task chains skills: clean → enrich with lookups → pivot → decide → write it up. Each step has its own **Check**, and you can check them in any order. The data decides whether each step is right, so a step built on unclean data fails.\n\nThe targets in the Reps table (column T) are **annual**. Three quarters of the year are gone, so the fair comparison is revenue **year to date** (Qtr1–Qtr3) against **¾ of the annual target**.",
+  "steps": [
+    {
+      "id": "clean",
+      "title": "Clean the export",
+      "ask": "Fix all **11 problems** in the export: duplicates, blank regions, region text, quantities stored as text, the mistyped ProductID, and the date in the wrong year.",
+      "answerCheck": {
+        "type": "cleaning-done",
+        "defects": [
+          {
+            "id": "dup-o1034",
+            "label": "O1034 appears twice (exact duplicate row)"
+          },
+          {
+            "id": "dup-o1121",
+            "label": "O1121 appears twice (exact duplicate row)"
+          },
+          {
+            "id": "blank-region-o1057",
+            "label": "O1057 has a blank Region"
+          },
+          {
+            "id": "blank-region-o1098",
+            "label": "O1098 has a blank Region"
+          },
+          {
+            "id": "spaces-o1012",
+            "label": "O1012 Region has stray spaces and lower case"
+          },
+          {
+            "id": "caps-o1076",
+            "label": "O1076 Region is in capitals"
+          },
+          {
+            "id": "lower-o1140",
+            "label": "O1140 Region is in lower case"
+          },
+          {
+            "id": "text-qty-o1045",
+            "label": "O1045 Quantity is stored as text"
+          },
+          {
+            "id": "text-qty-o1150",
+            "label": "O1150 Quantity is stored as text"
+          },
+          {
+            "id": "typo-product-o1088",
+            "label": "O1088 ProductID has a letter O instead of a zero"
+          },
+          {
+            "id": "future-date-o1170",
+            "label": "O1170 is dated 2026: a typo for 2025"
+          }
+        ]
+      },
+      "hint": "The same six moves as Assignment 3. Check the pivot's note for product IDs that aren't in the price list.",
+      "solution": {
+        "steps": [
+          {
+            "op": "dedupe"
+          },
+          {
+            "op": "fill",
+            "formula": "=VLOOKUP(E2,$Q$2:$R$8,2,FALSE)",
+            "column": "D",
+            "scope": "blanks"
+          },
+          {
+            "op": "fill",
+            "formula": "=TRIM(PROPER(D2))",
+            "column": "D",
+            "scope": "all"
+          },
+          {
+            "op": "convert",
+            "column": "G"
+          },
+          {
+            "op": "replace",
+            "find": "P0O2",
+            "replace": "P002",
+            "column": "C",
+            "entire": true
+          },
+          {
+            "op": "set",
+            "orderId": "O1170",
+            "column": "B",
+            "value": "2025-12-12"
+          }
+        ],
+        "explain": "Remove Duplicates · rep lookup into the blank Regions · TRIM(PROPER()) down D · Convert to Number on G · P0O2 → P002 · O1170's date → 2025-12-12."
+      }
+    },
+    {
+      "id": "enrich",
+      "title": "Enrich: one order's revenue",
+      "ask": "Order **O1088** was the one with the mistyped ProductID. Find its row, then work out its **revenue** with a lookup: Quantity × ListPrice × (1 − Discount). Type it in the box and press **Run**.",
+      "answerCheck": [
+        {
+          "type": "value",
+          "expect": 1992,
+          "tolerance": 0.01
+        },
+        {
+          "type": "formula-uses",
+          "oneOf": [
+            "VLOOKUP",
+            "XLOOKUP",
+            "INDEX"
+          ],
+          "exactMatch": true
+        }
+      ],
+      "hint": "If the lookup says #N/A, the ProductID is still mistyped: that's why cleaning comes first.",
+      "solution": {
+        "formula": "=G{row:O1088}*VLOOKUP(C{row:O1088},$J$2:$N$15,5,FALSE)*(1-H{row:O1088})"
+      }
+    },
+    {
+      "id": "q3-region",
+      "title": "Pivot: Q3 revenue by region",
+      "ask": "Build a pivot of **revenue by region for Qtr3 only** (filter the quarter), on the cleaned data.",
+      "answerCheck": {
+        "type": "pivot-state",
+        "expect": {
+          "rows": "Region",
+          "columns": "",
+          "value": "Revenue",
+          "agg": "sum",
+          "showAs": "none",
+          "filter": {
+            "field": "Quarter",
+            "values": [
+              "Qtr3"
+            ]
+          }
+        },
+        "tolerance": 0.01,
+        "totals": {
+          "Attica": 22154.5,
+          "Crete": 4948.95,
+          "Macedonia": 21590.9,
+          "Peloponnese": 9020.25,
+          "Thessaly": 2640.05,
+          "Grand Total": 60354.65
+        }
+      },
+      "hint": "Rows: Region; Values: Sum of Revenue; Filter: Quarter = Qtr3. If you inserted the pivot before cleaning, Refresh it.",
+      "solution": {
+        "pivot": {
+          "rows": "Region",
+          "columns": "",
+          "value": "Revenue",
+          "agg": "sum",
+          "showAs": "none",
+          "filter": {
+            "field": "Quarter",
+            "values": [
+              "Qtr3"
+            ]
+          }
+        },
+        "refresh": true
+      }
+    },
+    {
+      "id": "ytd-rep",
+      "title": "Pivot: revenue by rep, year to date",
+      "ask": "Now switch the pivot to **revenue by rep, year to date**: Qtr1, Qtr2 and Qtr3 (not Qtr4).",
+      "answerCheck": {
+        "type": "pivot-state",
+        "expect": {
+          "rows": "Rep",
+          "columns": "",
+          "value": "Revenue",
+          "agg": "sum",
+          "showAs": "none",
+          "filter": {
+            "field": "Quarter",
+            "values": [
+              "Qtr1",
+              "Qtr2",
+              "Qtr3"
+            ]
+          }
+        },
+        "tolerance": 0.01,
+        "totals": {
+          "Dimitra Georgiou": 40828,
+          "Eleni Makri": 80312.75,
+          "Giorgos Nikolaou": 26594.95,
+          "Kostas Alexiou": 25312.1,
+          "Maria Ioannou": 34418,
+          "Nikos Petrou": 27127.35,
+          "Sofia Papadaki": 43452.85,
+          "Grand Total": 278046
+        }
+      },
+      "hint": "Rows: Rep; Filter: Quarter with Qtr1–Qtr3 ticked and Qtr4 unticked.",
+      "solution": {
+        "pivot": {
+          "rows": "Rep",
+          "columns": "",
+          "value": "Revenue",
+          "agg": "sum",
+          "showAs": "none",
+          "filter": {
+            "field": "Quarter",
+            "values": [
+              "Qtr1",
+              "Qtr2",
+              "Qtr3"
+            ]
+          }
+        },
+        "refresh": true
+      }
+    },
+    {
+      "id": "target",
+      "title": "Enrich: a target to date",
+      "ask": "Look up **Maria Ioannou**'s annual Target in the Reps table and take **¾** of it: her target to date. Type it in the box and press **Run**.",
+      "answerCheck": [
+        {
+          "type": "value",
+          "expect": 30000
+        },
+        {
+          "type": "formula-uses",
+          "oneOf": [
+            "VLOOKUP",
+            "XLOOKUP",
+            "INDEX"
+          ],
+          "exactMatch": true
+        }
+      ],
+      "hint": "Search RepName (Q), return Target: it's the 4th column of Q:T. Then × 0.75.",
+      "solution": {
+        "formula": "=VLOOKUP(\"Maria Ioannou\",$Q$2:$T$8,4,FALSE)*0.75"
+      }
+    },
+    {
+      "id": "finding",
+      "title": "The two-sentence finding",
+      "ask": "Chart the pivot that makes your point (columns or bars, largest first), then complete the finding. Work out each rep's year-to-date revenue as a % of ¾ of their target: the lowest is not necessarily the rep with the least revenue.",
+      "story": {
+        "sentence": "In Q3, {region} brought in the most revenue (€{regionAmount}), just ahead of {runnerUp}. Against target to date, {rep} is furthest behind at {repPct}% of target, even though {lowest} brought in less.",
+        "blanks": {
+          "region": {
+            "type": "choice",
+            "options": [
+              "Attica",
+              "Crete",
+              "Macedonia",
+              "Peloponnese",
+              "Thessaly"
+            ],
+            "label": "Q3's top region"
+          },
+          "regionAmount": {
+            "type": "number",
+            "label": "its Q3 revenue"
+          },
+          "runnerUp": {
+            "type": "choice",
+            "options": [
+              "Attica",
+              "Crete",
+              "Macedonia",
+              "Peloponnese",
+              "Thessaly"
+            ],
+            "label": "the runner-up region"
+          },
+          "rep": {
+            "type": "choice",
+            "options": [
+              "Eleni Makri",
+              "Nikos Petrou",
+              "Maria Ioannou",
+              "Giorgos Nikolaou",
+              "Dimitra Georgiou",
+              "Kostas Alexiou",
+              "Sofia Papadaki"
+            ],
+            "label": "rep furthest behind target"
+          },
+          "repPct": {
+            "type": "number",
+            "label": "their % of target to date (1 decimal)",
+            "size": 5
+          },
+          "lowest": {
+            "type": "choice",
+            "options": [
+              "Eleni Makri",
+              "Nikos Petrou",
+              "Maria Ioannou",
+              "Giorgos Nikolaou",
+              "Dimitra Georgiou",
+              "Kostas Alexiou",
+              "Sofia Papadaki"
+            ],
+            "label": "rep with the lowest revenue"
+          }
+        }
+      },
+      "answerCheck": {
+        "type": "story",
+        "chart": [
+          "column",
+          "bar"
+        ],
+        "sort": "desc",
+        "blanks": {
+          "region": {
+            "expect": "Attica",
+            "label": "Q3's top region"
+          },
+          "regionAmount": {
+            "expect": 22154.5,
+            "tolerance": 1,
+            "label": "Q3 revenue of the top region"
+          },
+          "runnerUp": {
+            "expect": "Macedonia",
+            "label": "runner-up region"
+          },
+          "rep": {
+            "expect": "Giorgos Nikolaou",
+            "label": "rep furthest behind target"
+          },
+          "repPct": {
+            "expect": 50.66,
+            "tolerance": 0.1,
+            "label": "% of target to date"
+          },
+          "lowest": {
+            "expect": "Kostas Alexiou",
+            "label": "rep with the lowest revenue"
+          }
+        }
+      },
+      "hint": "Q3 region figures come from the Qtr3 pivot. For the reps: year-to-date revenue ÷ (Target × 0.75), for each rep; the smallest % is furthest behind.",
+      "solution": {
+        "story": {
+          "series": "Grand Total",
+          "chart": "bar",
+          "sort": "desc",
+          "highlight": "Giorgos Nikolaou",
+          "title": "Giorgos Nikolaou is furthest behind target",
+          "blanks": {
+            "region": "Attica",
+            "regionAmount": "22,154.50",
+            "runnerUp": "Macedonia",
+            "rep": "Giorgos Nikolaou",
+            "repPct": "50.7",
+            "lowest": "Kostas Alexiou"
+          }
+        }
+      }
+    }
+  ],
+  "claimAfter": "I can take a messy export to a short, correct finding for a manager: cleaned, enriched, pivoted and checked against targets."
+}

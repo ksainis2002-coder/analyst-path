@@ -1,0 +1,86 @@
+{
+  "schema": 1,
+  "_note": "The readiness report's skill map (spec §3, §9). DATA, not code. Each skill is demonstrated ONLY by its `evidence` (a gate task id or a case id) passed without help. `practice` lists the lessons whose drills count as practice for it; practice alone never demonstrates a skill. `claim` is the CV/interview-safe wording once demonstrated; `helped` is what to say when the evidence was passed with help; `gap` is what to say (and do) until then.",
+  "skills": [
+    {
+      "id": "sheet-basics",
+      "label": "Cell references, ranges and $ locks",
+      "evidence": "l0-checkpoint",
+      "practice": ["l0-cells-ranges", "l0-formulas-values", "l0-absolute-refs"],
+      "claim": "Comfortable navigating a sheet and writing formulas with relative and absolute ($) references.",
+      "helped": "Familiar with cell references and $ locks.",
+      "gap": "Pass the Level 0 checkpoint before claiming basic formula fluency."
+    },
+    {
+      "id": "aggregates",
+      "label": "Conditional totals and counts: SUMIFS, COUNTIFS, IF, IFERROR",
+      "evidence": "a1-sales-summary",
+      "practice": ["l1-daily-four", "l1-if", "l1-sumif-sumifs", "l1-countif-countifs", "l1-iferror"],
+      "claim": "Summarise and conditionally aggregate transactional data with SUMIFS, COUNTIFS, IF and IFERROR.",
+      "helped": "Practising conditional aggregation (SUMIFS, COUNTIFS).",
+      "gap": "Don't list SUMIFS/COUNTIFS yet: pass Assignment 1 (Sales summary) first."
+    },
+    {
+      "id": "lookups",
+      "label": "Lookups: VLOOKUP (exact and approximate), XLOOKUP, INDEX/MATCH",
+      "evidence": "a2-enrich-orders",
+      "practice": ["l2-vlookup", "l2-exact-approx", "l2-xlookup", "l2-index-match", "l2-lookup-math"],
+      "claim": "Join tables with VLOOKUP, XLOOKUP and INDEX/MATCH, including approximate-match bands and lookups inside calculations.",
+      "helped": "Practising lookups (VLOOKUP, XLOOKUP, INDEX/MATCH).",
+      "gap": "Don't claim VLOOKUP/INDEX-MATCH yet: pass Assignment 2 (Enrich the order log) first."
+    },
+    {
+      "id": "cleaning",
+      "label": "Data cleaning: duplicates, blanks, TRIM/PROPER, text to number, Find & Replace",
+      "evidence": "a3-messy-export",
+      "practice": ["l3-duplicates-blanks", "l3-standardise"],
+      "claim": "Clean raw exports: remove duplicates, fill blanks from a reliable source, standardise text, fix numbers stored as text and typos.",
+      "helped": "Practising data cleaning in Excel.",
+      "gap": "Don't claim data cleaning yet: pass Assignment 3 (From messy export to one-slide answer)."
+    },
+    {
+      "id": "pivots",
+      "label": "Pivot tables: build, group dates, filter, % of total, refresh",
+      "evidence": "a3-messy-export",
+      "practice": ["l3-pivot-build", "l3-pivot-filter-pct", "l3-pivot-refresh"],
+      "claim": "Build pivot tables: group dates, filter, show values as % of total, and refresh after the data changes.",
+      "helped": "Practising pivot tables.",
+      "gap": "Don't claim pivot tables yet: pass Assignment 3."
+    },
+    {
+      "id": "story",
+      "label": "Charts and a one-sentence insight",
+      "evidence": "a3-messy-export",
+      "practice": ["l3-story"],
+      "claim": "Choose the right chart, title it with the finding, and state the insight in one sentence.",
+      "helped": "Practising presenting findings with charts.",
+      "gap": "Don't claim data storytelling yet: pass Assignment 3."
+    },
+    {
+      "id": "end-to-end",
+      "label": "End to end: messy export → cleaned, enriched, pivoted, checked against targets → finding",
+      "evidence": "case-a",
+      "practice": [],
+      "claim": "Take a messy sales export to a short, correct finding for a manager, including performance against target.",
+      "helped": "Worked through an end-to-end sales review case study, with help.",
+      "gap": "Do Case A (Q3 sales review) before describing end-to-end analysis work."
+    },
+    {
+      "id": "timed",
+      "label": "A mixed practical Excel test under a 45-minute limit",
+      "evidence": "mock-test",
+      "practice": [],
+      "claim": "Sit a timed, mixed practical Excel test (lookups, conditional aggregates, cleaning, pivots) and finish it correctly within 45 minutes.",
+      "helped": "Passed a timed mock Excel test on a variant whose answer key I had seen.",
+      "gap": "Pass the mock hiring test cold before saying you're ready for a timed Excel test."
+    }
+  ],
+  "outOfScope": [
+    "VBA and macros",
+    "Power Query and Power Pivot",
+    "Dynamic arrays (FILTER, UNIQUE, SORT) and IFS/SWITCH",
+    "Financial modelling",
+    "Advanced charting and dashboards beyond one chart"
+  ],
+  "fallback": "Strong on data prep and analysis; actively building advanced Excel skills (lookups, pivots) through graded practice."
+}

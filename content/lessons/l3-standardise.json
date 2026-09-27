@@ -1,0 +1,232 @@
+{
+  "id": "l3-standardise",
+  "level": 3,
+  "order": 2,
+  "title": "Standardise text, numbers and typos",
+  "estMinutes": 18,
+  "dataset": "aegean-messy",
+  "lab": {
+    "panels": [
+      "cleaning"
+    ]
+  },
+  "concept": "Three regions in the export are typed differently: `\" attica \"` (spaces, lower case), `\"CRETE\"` and `\"crete\"`. Excel's criteria ignore case, so `=COUNTIF(D2:D183,\"Crete\")` still finds CRETE. But **spaces are characters**: `=COUNTIF(D2:D183,\"Attica\")` returns **{{=COUNTIF(D2:D183,\"Attica\")}}** and misses `\" attica \"`, and a pivot shows it as a separate row.\n\n**Standardise text** with a helper column: `=TRIM(PROPER(D2))`. PROPER sets the first letter of each word to a capital and the rest to lower case; TRIM removes spaces at the ends and doubles in the middle. Fill it down, then **Copy ▸ Paste Special ▸ Values** over column D and delete the helper. (Google Sheets also has Data ▸ Data cleanup ▸ Trim whitespace, which only trims.)\n\n**Numbers stored as text** sit left-aligned with a small green corner. They look like numbers, but SUM, COUNT and pivots skip them: `=SUM(G2:G183)` is **{{=SUM(G2:G183)}}** and `=COUNT(G2:G183)` counts **{{=COUNT(G2:G183)}}** of the 182 quantities. Fix them with the ⚠ icon ▸ **Convert to Number**, or `=VALUE(G2)` in a helper column.\n\n**Typos in IDs** break lookups. One ProductID reads `P0O2`: a letter O where a zero belongs. Its price lookup is #N/A, and wrapped in IFERROR it silently becomes 0. Fix it with **Find & Replace**, scoped to the ProductID column, with *Match entire cell contents* ticked.\n\n> [!warn] Find & Replace hits every cell in its scope. Replace O with 0 across the whole sheet and every OrderID (O1001 …) turns into a number (1001). Scope it, then check the count Excel reports.\n\n**Impossible dates.** The file is for 2025, so a 2026 date is a typing slip. Sort the Date column newest first and it jumps to the top; fix the year.",
+  "syntax": [
+    {
+      "signature": "=TRIM(text)",
+      "args": [
+        {
+          "name": "text",
+          "desc": "removes spaces at both ends, and repeats in the middle"
+        }
+      ]
+    },
+    {
+      "signature": "=PROPER(text)",
+      "args": [
+        {
+          "name": "text",
+          "desc": "First Letter Capital, the rest lower case"
+        }
+      ]
+    },
+    {
+      "signature": "=VALUE(text)",
+      "args": [
+        {
+          "name": "text",
+          "desc": "number-text such as \"14\" → the number 14"
+        }
+      ]
+    }
+  ],
+  "worked": {
+    "prompt": "Standardise O1012's region (row 13, stored as \" attica \").",
+    "formula": "=TRIM(PROPER(D13))",
+    "explain": "PROPER turns ` attica ` into ` Attica `; TRIM strips the spaces. Result: **{{=TRIM(PROPER(D13))}}**. Filled down column D and pasted as values, the same formula fixes every region at once.",
+    "expect": "Attica"
+  },
+  "mistakes": [
+    "TRIM alone: ` attica ` becomes `attica`, still lower case. PROPER alone keeps the spaces. You need both.",
+    "Writing `=TRIM(D2)` in D2 itself: a circular reference. Use a helper column, then paste values.",
+    "Find & Replace with no scope: `O` → `0` everywhere turns every OrderID into a number.",
+    "Leaving numbers stored as text: nothing errors, the totals are just short."
+  ],
+  "drills": [
+    {
+      "id": "test-standardise",
+      "ask": "In the formula bar, return **O1076**'s Region (row 78) standardised, using TRIM and PROPER, and press **Test**.",
+      "starter": "",
+      "answerCheck": [
+        {
+          "type": "value",
+          "expect": "Crete"
+        },
+        {
+          "type": "formula-uses",
+          "functions": [
+            "TRIM",
+            "PROPER"
+          ]
+        }
+      ],
+      "hint": "Wrap one inside the other: `=TRIM(PROPER(D78))`.",
+      "solution": "=TRIM(PROPER(D78))"
+    },
+    {
+      "id": "standardise",
+      "ask": "Standardise **every Region** in column D: no stray spaces, a capital first letter. (Blank regions don't count in this drill.) Then press **Check**.",
+      "answerCheck": {
+        "type": "cleaning-done",
+        "defects": [
+          {
+            "id": "spaces-o1012",
+            "label": "O1012 Region has stray spaces and lower case"
+          },
+          {
+            "id": "caps-o1076",
+            "label": "O1076 Region is in capitals"
+          },
+          {
+            "id": "lower-o1140",
+            "label": "O1140 Region is in lower case"
+          }
+        ]
+      },
+      "hint": "Formula fill `=TRIM(PROPER(D2))` into column D, every row.",
+      "solution": {
+        "steps": [
+          {
+            "op": "fill",
+            "formula": "=TRIM(PROPER(D2))",
+            "column": "D",
+            "scope": "all"
+          }
+        ],
+        "explain": "=TRIM(PROPER(D2)) filled down D, pasted as values."
+      }
+    },
+    {
+      "id": "text-numbers",
+      "ask": "Make every **Quantity** a real number. Then press **Check**.",
+      "answerCheck": {
+        "type": "cleaning-done",
+        "defects": [
+          {
+            "id": "text-qty-o1045",
+            "label": "O1045 Quantity is stored as text"
+          },
+          {
+            "id": "text-qty-o1150",
+            "label": "O1150 Quantity is stored as text"
+          }
+        ]
+      },
+      "hint": "Look for the green corners in column G, then Convert to Number on G (or fill `=VALUE(G2)` into G).",
+      "solution": {
+        "steps": [
+          {
+            "op": "convert",
+            "column": "G"
+          }
+        ],
+        "explain": "Convert to Number on column G."
+      }
+    },
+    {
+      "id": "fix-typo",
+      "ask": "One ProductID has a letter O where a zero belongs. Fix it with **Find & Replace**, without changing anything else. Then press **Check**.",
+      "answerCheck": {
+        "type": "cleaning-done",
+        "defects": [
+          {
+            "id": "typo-product-o1088",
+            "label": "O1088 ProductID has a letter O instead of a zero"
+          }
+        ]
+      },
+      "hint": "The bad ID is `P0O2`. Replace it with `P002`, within column C, matching the entire cell.",
+      "solution": {
+        "steps": [
+          {
+            "op": "replace",
+            "find": "P0O2",
+            "replace": "P002",
+            "column": "C",
+            "entire": true
+          }
+        ],
+        "explain": "Find P0O2, replace with P002, within column C, match entire cell contents."
+      }
+    },
+    {
+      "id": "future-date",
+      "ask": "One order is dated **2026**, a year after everything else. Find it and correct the year. Then press **Check**.",
+      "answerCheck": {
+        "type": "cleaning-done",
+        "defects": [
+          {
+            "id": "future-date-o1170",
+            "label": "O1170 is dated 2026: a typo for 2025"
+          }
+        ]
+      },
+      "hint": "Sort by Date, largest first: it's the top row. Keep the day and month; change only the year to 2025.",
+      "solution": {
+        "steps": [
+          {
+            "op": "set",
+            "orderId": "O1170",
+            "column": "B",
+            "value": "2025-12-12"
+          }
+        ],
+        "explain": "O1170's date typed as 2025-12-12."
+      }
+    }
+  ],
+  "checkpoint": {
+    "type": "quiz",
+    "passMark": 3,
+    "questions": [
+      {
+        "id": "trim-proper",
+        "prompt": "Which formula turns `\" attica \"` into `Attica`?",
+        "options": [
+          "=TRIM(D2)",
+          "=PROPER(D2)",
+          "=UPPER(TRIM(D2))",
+          "=TRIM(PROPER(D2))"
+        ],
+        "answer": 3,
+        "explain": "PROPER fixes the case, TRIM the spaces; you need both. UPPER would give ATTICA."
+      },
+      {
+        "id": "text-number-sum",
+        "prompt": "A quantity is left-aligned with a green corner. What does SUM do with it?",
+        "options": [
+          "Ignores it",
+          "Adds it like any number",
+          "Returns #VALUE!",
+          "Counts it as 1"
+        ],
+        "answer": 0,
+        "explain": "It's text that looks like a number. SUM, COUNT and pivot sums skip text, so the total is quietly short."
+      },
+      {
+        "id": "replace-o",
+        "prompt": "Find `O`, replace with `0`, **all columns**. What happens to order O1001?",
+        "options": [
+          "Nothing: only ProductIDs change",
+          "It becomes the number 1001",
+          "It becomes the text 01001",
+          "Excel refuses to replace"
+        ],
+        "answer": 1,
+        "explain": "Replace reaches every cell in scope, and Excel re-reads the result: \"01001\" is a number, so the ID becomes 1001."
+      }
+    ]
+  },
+  "claimAfter": "I can standardise messy text, fix numbers stored as text, and correct typos safely with Find & Replace.",
+  "notYet": "You haven't summarised anything yet. Pivot tables come next."
+}

@@ -1,0 +1,132 @@
+{
+  "dataset": "aegean",
+  "id": "l0-cells-ranges",
+  "level": 0,
+  "order": 1,
+  "title": "Cells, ranges and the console",
+  "estMinutes": 10,
+  "concept": "A spreadsheet is a grid. Every **cell** has an address: its column letter, then its row number. `G2` is column G, row 2. In the practice sheet that's the quantity of the first order, **{{=G2}}**.\n\nThe practice sheet is the order log of **Aegean Supplies**, an office-equipment distributor: 180 orders in columns A–H, and three small lookup tables to the right (products in J–N, sales reps in P–T, discount tiers in V–X).\n\nA **range** is a rectangle of cells, written as its first cell, a colon, and its last cell. `G2:G181` means every cell from G2 down to G181: all 180 order quantities. `J2:N15` is a block five columns wide and fourteen rows tall: the product table.\n\nAnything that starts with `=` is a **formula**. Excel works it out instead of showing what you typed. `=G2` shows whatever is in G2, and changes if G2 changes.\n\n> [!tip] How practice works here: type a formula in the console (the `=` is optional), press Enter, and watch the sheet. Clay marks what a formula searched for, green where it matched, blue what came back. Drills are checked the moment you run them, and only formulas you type yourself count.",
+  "syntax": [
+    {
+      "signature": "=G2",
+      "args": [
+        {
+          "name": "G2",
+          "desc": "one cell: column G, row 2"
+        }
+      ]
+    },
+    {
+      "signature": "=SUM(G2:G181)",
+      "args": [
+        {
+          "name": "G2:G181",
+          "desc": "a range: every cell in the rectangle between the two corners"
+        }
+      ]
+    }
+  ],
+  "worked": {
+    "prompt": "What is the total quantity of the first three orders?",
+    "formula": "=SUM(G2:G4)",
+    "explain": "`G2:G4` is the range of three quantity cells ({{=G2}}, {{=G3}} and {{=G4}}). SUM adds them: **{{=SUM(G2:G4)}}**. Run it and the three cells light up as the ones that were added.",
+    "expect": 38
+  },
+  "mistakes": [
+    "Writing the row first: `2G` isn't a cell. It's always column letter, then row number: `G2`.",
+    "A comma instead of a colon: `SUM(G2,G181)` adds just **two** cells; `SUM(G2:G181)` adds all 180.",
+    "Counting the header row: row 1 holds the column names, so the data starts on row 2."
+  ],
+  "drills": [
+    {
+      "id": "read-a-cell",
+      "ask": "What's the quantity of the first order? Point a formula at its cell (column G, row 2).",
+      "starter": "",
+      "answerCheck": [
+        {
+          "type": "value",
+          "expect": 10
+        }
+      ],
+      "hint": "Quantity is column G and the first order is on row 2, so the cell is `G2`. Type `=G2`.",
+      "solution": "=G2"
+    },
+    {
+      "id": "product-name",
+      "ask": "Return the product name in cell **K7**.",
+      "starter": "",
+      "answerCheck": [
+        {
+          "type": "value",
+          "expect": "Webcam HD"
+        }
+      ],
+      "hint": "Just the address: `=K7`.",
+      "solution": "=K7"
+    },
+    {
+      "id": "add-two",
+      "ask": "Add the quantities of the first two orders (G2 and G3) using `+`.",
+      "starter": "",
+      "answerCheck": [
+        {
+          "type": "value",
+          "expect": 22
+        }
+      ],
+      "hint": "Two cell references joined by `+`: `=G2+G3`.",
+      "solution": "=G2+G3"
+    },
+    {
+      "id": "sum-range",
+      "ask": "Total the quantities of the first five orders (G2 to G6) using a **range** inside SUM.",
+      "starter": "",
+      "answerCheck": [
+        {
+          "type": "value",
+          "expect": 62
+        },
+        {
+          "type": "formula-uses",
+          "functions": [
+            "SUM"
+          ]
+        }
+      ],
+      "hint": "A range is first cell, colon, last cell: `G2:G6`. Put it inside `SUM( )`.",
+      "solution": "=SUM(G2:G6)"
+    }
+  ],
+  "checkpoint": {
+    "type": "quiz",
+    "passMark": 2,
+    "questions": [
+      {
+        "id": "cell-address",
+        "prompt": "Which cell is in column **H**, row **4**?",
+        "options": [
+          "H4",
+          "4H",
+          "D8",
+          "H:4"
+        ],
+        "answer": 0,
+        "explain": "Column letter first, then row number: `H4`."
+      },
+      {
+        "id": "range-size",
+        "prompt": "How many cells are in the range `B2:C4`?",
+        "options": [
+          "2",
+          "3",
+          "6",
+          "8"
+        ],
+        "answer": 2,
+        "explain": "Two columns (B, C) × three rows (2, 3, 4) = 6 cells."
+      }
+    ]
+  },
+  "claimAfter": "I can read cell addresses and ranges, and point a formula at them.",
+  "notYet": "Locking references with `$` so formulas copy correctly, and functions beyond SUM. That's the next two lessons, then Level 1."
+}

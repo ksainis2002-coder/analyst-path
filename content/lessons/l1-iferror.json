@@ -1,0 +1,146 @@
+{
+  "dataset": "aegean",
+  "id": "l1-iferror",
+  "level": 1,
+  "order": 5,
+  "title": "IFERROR: catch errors gracefully",
+  "estMinutes": 12,
+  "concept": "Some formulas can't always produce an answer. Divide by a count of zero and you get `#DIV/0!`; in Level 2, a lookup that can't find its value gives `#N/A`. One error cell breaks every total that depends on it, and it looks careless in a report.\n\n`=IFERROR(value, value_if_error)` works out the formula; if it produces **any** error, it shows the fallback instead.\n\nA realistic case: *average units per order in a region* is total ÷ number of orders:\n\n`=SUMIF(D2:D181,\"Attica\",G2:G181)/COUNTIF(D2:D181,\"Attica\")` is {{=SUMIF(D2:D181,\"Attica\",G2:G181)}} ÷ {{=COUNTIF(D2:D181,\"Attica\")}}.\n\nAegean Supplies is opening in **Epirus**, which has no orders yet, so the same formula there is 0 ÷ 0: `#DIV/0!`. Wrap it: `=IFERROR(SUMIF(…)/COUNTIF(…),0)`.\n\n> [!warn] IFERROR hides **every** error, including real mistakes such as a typo in a range. Add it last, once the formula works, and pick a fallback that can't be mistaken for a real result: \"No orders\" is clearer than 0.\n\nYou'll use IFERROR constantly in Level 2 to catch lookups that find no match.",
+  "syntax": [
+    {
+      "signature": "=IFERROR(value, value_if_error)",
+      "args": [
+        {
+          "name": "value",
+          "desc": "the formula to try"
+        },
+        {
+          "name": "value_if_error",
+          "desc": "what to show instead if it errors: a number, `\"text\"`, or a cell"
+        }
+      ]
+    }
+  ],
+  "worked": {
+    "prompt": "Average units per order in Attica, as total ÷ count, rounded to 2 decimals.",
+    "formula": "=ROUND(SUMIF(D2:D181,\"Attica\",G2:G181)/COUNTIF(D2:D181,\"Attica\"),2)",
+    "explain": "SUMIF gives {{=SUMIF(D2:D181,\"Attica\",G2:G181)}} and COUNTIF gives {{=COUNTIF(D2:D181,\"Attica\")}}; rounded, that's **{{=ROUND(SUMIF(D2:D181,\"Attica\",G2:G181)/COUNTIF(D2:D181,\"Attica\"),2)}}**. No IFERROR needed yet, because Attica has orders.",
+    "expect": 19.8
+  },
+  "mistakes": [
+    "Wrapping a formula in IFERROR before checking it works. You'll never see the mistake it hides.",
+    "Using 0 as the fallback when 0 could also be a real answer. Readers can't tell \"none\" from \"zero\".",
+    "Leaving out the fallback: IFERROR needs both the formula and what to show instead."
+  ],
+  "drills": [
+    {
+      "id": "epirus-zero",
+      "ask": "Average units per order in **Epirus** (no orders yet) is `SUMIF(D2:D181,\"Epirus\",G2:G181)/COUNTIF(D2:D181,\"Epirus\")`. It's loaded in the console: run it to see the error, then wrap it in IFERROR so it shows **0**.",
+      "starter": "SUMIF(D2:D181,\"Epirus\",G2:G181)/COUNTIF(D2:D181,\"Epirus\")",
+      "answerCheck": [
+        {
+          "type": "value",
+          "expect": 0
+        },
+        {
+          "type": "formula-uses",
+          "functions": [
+            "IFERROR",
+            "SUMIF",
+            "COUNTIF"
+          ]
+        }
+      ],
+      "hint": "Put the whole division inside `IFERROR( … , 0)`.",
+      "solution": "=IFERROR(SUMIF(D2:D181,\"Epirus\",G2:G181)/COUNTIF(D2:D181,\"Epirus\"),0)"
+    },
+    {
+      "id": "no-orders-text",
+      "ask": "Same formula, but show the text **\"No orders\"** instead of 0.",
+      "starter": "",
+      "answerCheck": [
+        {
+          "type": "value",
+          "expect": "No orders"
+        },
+        {
+          "type": "formula-uses",
+          "functions": [
+            "IFERROR",
+            "SUMIF",
+            "COUNTIF"
+          ]
+        }
+      ],
+      "hint": "The fallback can be text in quotes: `\"No orders\"`.",
+      "solution": "=IFERROR(SUMIF(D2:D181,\"Epirus\",G2:G181)/COUNTIF(D2:D181,\"Epirus\"),\"No orders\")"
+    },
+    {
+      "id": "thessaly-avg",
+      "ask": "Average units per order in **Thessaly**, rounded to **2** decimals, wrapped in IFERROR (fallback 0) so it would be safe for any region.",
+      "starter": "",
+      "answerCheck": [
+        {
+          "type": "value",
+          "expect": 15.94
+        },
+        {
+          "type": "formula-uses",
+          "functions": [
+            "IFERROR",
+            "SUMIF",
+            "COUNTIF",
+            "ROUND"
+          ]
+        }
+      ],
+      "hint": "Round the division to 2 decimals, and wrap it in IFERROR.",
+      "solution": "=IFERROR(ROUND(SUMIF(D2:D181,\"Thessaly\",G2:G181)/COUNTIF(D2:D181,\"Thessaly\"),2),0)"
+    }
+  ],
+  "checkpoint": {
+    "type": "quiz",
+    "passMark": 2,
+    "questions": [
+      {
+        "id": "returns",
+        "prompt": "What does `=IFERROR(G2/0,\"n/a\")` return?",
+        "options": [
+          "n/a",
+          "#DIV/0!",
+          "0",
+          "G2"
+        ],
+        "answer": 0,
+        "explain": "G2/0 is a #DIV/0! error, so IFERROR shows the fallback text instead.",
+        "verify": "=IFERROR(G2/0,\"n/a\")"
+      },
+      {
+        "id": "which-errors",
+        "prompt": "Which errors does IFERROR catch?",
+        "options": [
+          "Only #N/A",
+          "Only #DIV/0!",
+          "Every error type",
+          "None; it only formats numbers"
+        ],
+        "answer": 2,
+        "explain": "Any error at all, including ones caused by real mistakes. That's why you add it last."
+      },
+      {
+        "id": "fallback",
+        "prompt": "Why is \"No orders\" often a better fallback than 0?",
+        "options": [
+          "It's shorter",
+          "0 can be a real result, so readers can't tell \"none\" from \"zero\"",
+          "Excel can't display 0",
+          "Text is calculated faster"
+        ],
+        "answer": 1,
+        "explain": "A fallback should be obviously different from any real result."
+      }
+    ]
+  },
+  "claimAfter": "I can stop error codes spreading through a sheet with IFERROR, and choose an honest fallback.",
+  "notYet": "Catching lookup errors (#N/A from VLOOKUP and XLOOKUP), IFERROR's most common use. That's Level 2."
+}

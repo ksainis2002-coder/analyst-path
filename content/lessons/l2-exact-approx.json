@@ -1,0 +1,156 @@
+{
+  "dataset": "aegean",
+  "id": "l2-exact-approx",
+  "level": 2,
+  "order": 2,
+  "title": "The 4th argument: exact vs approximate match",
+  "estMinutes": 15,
+  "concept": "VLOOKUP's last argument decides *how* it matches:\n\n- `FALSE` or `0`: **exact** match. Find this exact ID, or return #N/A. Use it for IDs, names, anything that must match exactly.\n- `TRUE`, `1` or **left out**: **approximate** match. Excel assumes the first column is **sorted ascending** and returns the row with the largest value that's **≤** the lookup value.\n\nApproximate match is *right* for **bands and tiers**. Aegean Supplies' volume discounts (V2:X5) work like this: orders of 1–9 units are Standard, 10–24 Bulk, 25–49 Trade, 50+ Wholesale. `=VLOOKUP(30,$V$2:$X$5,2,TRUE)` finds the largest MinQty ≤ 30, which is 25, and returns **{{=VLOOKUP(30,$V$2:$X$5,2,TRUE)}}**.\n\n> [!warn] **The silent-wrong-answer trap.** If you leave out the 4th argument, Excel uses *approximate*. For an ID that isn't in the table, `=VLOOKUP(\"P016\",$J$2:$N$15,2)` doesn't give #N/A. It returns **{{=VLOOKUP(\"P016\",$J$2:$N$15,2)}}**, the last ID that sorts before P016. No error, and a wrong answer. That's why \"always end with FALSE\" is rule one.\n\nFor approximate match to work, the first column **must be sorted ascending**. On unsorted data it returns wrong answers without warning.",
+  "syntax": [
+    {
+      "signature": "=VLOOKUP(lookup_value, table_array, col_index_num, range_lookup)",
+      "args": [
+        {
+          "name": "range_lookup",
+          "desc": "`FALSE`/`0` = exact (IDs, names). `TRUE`/`1`/omitted = approximate (sorted bands, tiers)"
+        }
+      ]
+    }
+  ],
+  "worked": {
+    "prompt": "Which discount band applies to an order of 30 units?",
+    "formula": "=VLOOKUP(30,$V$2:$X$5,2,TRUE)",
+    "explain": "The tier table is sorted by MinQty (1, 10, 25, 50). The largest MinQty that's ≤ 30 is 25, so VLOOKUP returns that row's band: **{{=VLOOKUP(30,$V$2:$X$5,2,TRUE)}}**. Run it: the search *jumps* (a binary search) instead of reading every row.",
+    "expect": "Trade"
+  },
+  "mistakes": [
+    "Leaving out FALSE on an ID lookup. A missing ID quietly returns the *wrong* row instead of #N/A.",
+    "Using FALSE on a band lookup: `VLOOKUP(30,$V$2:$X$5,2,FALSE)` looks for exactly 30 and returns #N/A.",
+    "Approximate match on an unsorted column: wrong answers, no error."
+  ],
+  "drills": [
+    {
+      "id": "band-row12",
+      "ask": "Which **discount band** applies to order O1011 (row 12), based on its quantity?",
+      "starter": "",
+      "answerCheck": [
+        {
+          "type": "value",
+          "expect": "Bulk"
+        },
+        {
+          "type": "formula-uses",
+          "functions": [
+            "VLOOKUP"
+          ]
+        }
+      ],
+      "hint": "Look up the quantity `G12` in the tier table, approximate match, and return column 2 (Band).",
+      "solution": "=VLOOKUP(G12,$V$2:$X$5,2,TRUE)"
+    },
+    {
+      "id": "band-boundary",
+      "ask": "Order O1015 (row 16) is for exactly **25** units. Which band is it in?",
+      "starter": "",
+      "answerCheck": [
+        {
+          "type": "value",
+          "expect": "Trade"
+        },
+        {
+          "type": "formula-uses",
+          "functions": [
+            "VLOOKUP"
+          ]
+        }
+      ],
+      "hint": "Approximate match returns the row whose MinQty is the largest value **≤** the quantity, and 25 ≤ 25.",
+      "solution": "=VLOOKUP(G16,$V$2:$X$5,2,TRUE)"
+    },
+    {
+      "id": "tier-discount",
+      "ask": "What discount **should** order O1004 (row 5) get, according to the tier table? (Look it up; don't just read H5.)",
+      "starter": "",
+      "answerCheck": [
+        {
+          "type": "value",
+          "expect": 0.05
+        },
+        {
+          "type": "formula-uses",
+          "functions": [
+            "VLOOKUP"
+          ]
+        }
+      ],
+      "hint": "Discount is column 3 of `$V$2:$X$5`. The result shows as a number; 0.05 means 5%.",
+      "solution": "=VLOOKUP(G5,$V$2:$X$5,3,TRUE)"
+    },
+    {
+      "id": "missing-id",
+      "ask": "A customer asks about product **P016**, which doesn't exist. Write a lookup of its name that shows `\"Not found\"` instead of returning some other product's name.",
+      "starter": "",
+      "answerCheck": [
+        {
+          "type": "value",
+          "expect": "Not found"
+        },
+        {
+          "type": "formula-uses",
+          "functions": [
+            "VLOOKUP",
+            "IFERROR"
+          ],
+          "exactMatch": true
+        }
+      ],
+      "hint": "Exact match (FALSE) makes a missing ID an honest #N/A; then IFERROR turns #N/A into `\"Not found\"`.",
+      "solution": "=IFERROR(VLOOKUP(\"P016\",$J$2:$N$15,2,FALSE),\"Not found\")"
+    }
+  ],
+  "checkpoint": {
+    "type": "quiz",
+    "passMark": 2,
+    "questions": [
+      {
+        "id": "omitted",
+        "prompt": "What does `=VLOOKUP(\"P016\",$J$2:$N$15,2)` return? (There is no P016.)",
+        "options": [
+          "0",
+          "LED Desk Lamp",
+          "#N/A",
+          "P016"
+        ],
+        "answer": 1,
+        "explain": "With the 4th argument left out, Excel does an approximate match and returns the last ID that sorts before P016: a wrong answer with no error.",
+        "verify": "=VLOOKUP(\"P016\",$J$2:$N$15,2)"
+      },
+      {
+        "id": "when-approx",
+        "prompt": "When is approximate match (TRUE) the right choice?",
+        "options": [
+          "Looking up product IDs",
+          "Looking up names",
+          "Finding which band or tier a number falls into, in a table sorted ascending",
+          "Whenever the data is unsorted"
+        ],
+        "answer": 2,
+        "explain": "Bands and tiers, and only with the first column sorted ascending."
+      },
+      {
+        "id": "exact-flags",
+        "prompt": "Which 4th argument makes VLOOKUP an exact match?",
+        "options": [
+          "FALSE",
+          "0",
+          "Either FALSE or 0",
+          "TRUE"
+        ],
+        "answer": 2,
+        "explain": "FALSE and 0 mean the same thing: exact match."
+      }
+    ]
+  },
+  "claimAfter": "I know when a lookup must be exact, and I can use approximate match for sorted bands and tiers.",
+  "notYet": "Bands sorted in descending order (MATCH with -1). Always sort band tables ascending."
+}

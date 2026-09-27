@@ -1,0 +1,185 @@
+{
+  "id": "a2-enrich-orders",
+  "kind": "assignment",
+  "level": 2,
+  "title": "Assignment 2: Enrich the order log",
+  "dataset": "aegean",
+  "passMark": 8,
+  "key": "assignments/a2-enrich-orders.key.json",
+  "intro": "**The brief.** The order export only has IDs: product IDs and rep names, no product names, prices or RepIDs. Before a pricing review, your manager wants a few orders **enriched** from the product table (J:N), the reps table (P:T) and the discount tiers (V:X).\n\nWrite each answer as the formula you'd put in that order's row and **copy down** the column. So lock your lookup tables, and use exact matches for IDs and names.\n\n- You'll see each result as you go; correctness is checked when you submit. Pass: **8 of 8**; resubmit as often as you need.\n- Some tasks name the lookup to use (the test may ask for a specific one); the others accept VLOOKUP, XLOOKUP or INDEX/MATCH.\n- The answer key opens after your first submission. Opening it before you pass records the pass as *passed with help*.",
+  "tasks": [
+    {
+      "id": "name-vlookup",
+      "ask": "Product **name** for order O1020 (row 21). Use **VLOOKUP**, exact match, with the product table **locked** (as if you'd copy it down).",
+      "answerCheck": [
+        {
+          "type": "value",
+          "expect": "Docking Station"
+        },
+        {
+          "type": "formula-uses",
+          "functions": [
+            "VLOOKUP"
+          ],
+          "exactMatch": true,
+          "lockedRanges": [
+            "J:N"
+          ]
+        }
+      ],
+      "hint": "Search `C21` in `$J$2:$N$15`; the name is column 2. End with FALSE."
+    },
+    {
+      "id": "price-xlookup",
+      "ask": "**List price** for order O1047 (row 48). Use **XLOOKUP**, with both columns locked.",
+      "answerCheck": [
+        {
+          "type": "value",
+          "expect": 549
+        },
+        {
+          "type": "formula-uses",
+          "functions": [
+            "XLOOKUP"
+          ],
+          "lockedRanges": [
+            "J:J",
+            "N:N"
+          ]
+        }
+      ],
+      "hint": "Search the locked ID column `$J$2:$J$15` and return from the locked price column `$N$2:$N$15`."
+    },
+    {
+      "id": "category",
+      "ask": "**Category** of the product on order O1090 (row 91). Any lookup.",
+      "answerCheck": [
+        {
+          "type": "value",
+          "expect": "Peripherals"
+        },
+        {
+          "type": "formula-uses",
+          "oneOf": [
+            "VLOOKUP",
+            "XLOOKUP",
+            "INDEX"
+          ]
+        },
+        {
+          "type": "formula-uses",
+          "exactMatch": true
+        }
+      ],
+      "hint": "Category is column 3 of the product table (or `$L$2:$L$15` with XLOOKUP/INDEX)."
+    },
+    {
+      "id": "revenue",
+      "ask": "**Revenue** on order O1100 (row 101): quantity × list price × (1 − discount).",
+      "answerCheck": [
+        {
+          "type": "value",
+          "expect": 1657.5,
+          "tolerance": 0.005
+        },
+        {
+          "type": "formula-uses",
+          "oneOf": [
+            "VLOOKUP",
+            "XLOOKUP",
+            "INDEX"
+          ]
+        },
+        {
+          "type": "formula-uses",
+          "exactMatch": true
+        }
+      ],
+      "hint": "Quantity × the looked-up list price × `(1-H101)`. This is a Wholesale-band order, so the discount matters."
+    },
+    {
+      "id": "band",
+      "ask": "Which **discount band** does order O1065 (row 66) fall into? Look its quantity up in the tier table.",
+      "answerCheck": [
+        {
+          "type": "value",
+          "expect": "Trade"
+        },
+        {
+          "type": "formula-uses",
+          "oneOf": [
+            "VLOOKUP",
+            "XLOOKUP",
+            "INDEX"
+          ]
+        }
+      ],
+      "hint": "Bands need an **approximate** match (TRUE) on the sorted tier table. An exact match looks for that exact quantity in the MinQty column, and it isn't there."
+    },
+    {
+      "id": "missing-price",
+      "ask": "Revenue on order O1141 (row 142). Its product isn't in the price list yet: show `\"Price missing\"` instead of an error.",
+      "answerCheck": [
+        {
+          "type": "value",
+          "expect": "Price missing"
+        },
+        {
+          "type": "formula-uses",
+          "functions": [
+            "IFERROR"
+          ],
+          "oneOf": [
+            "VLOOKUP",
+            "XLOOKUP",
+            "INDEX"
+          ]
+        }
+      ],
+      "hint": "Wrap the whole revenue formula in `IFERROR( … , \"Price missing\")`."
+    },
+    {
+      "id": "rep-id",
+      "ask": "**RepID** of the rep on order O1120 (row 121). Use **INDEX/MATCH** (the IDs are to the *left* of the names).",
+      "answerCheck": [
+        {
+          "type": "value",
+          "expect": "R06"
+        },
+        {
+          "type": "formula-uses",
+          "functions": [
+            "INDEX",
+            "MATCH"
+          ],
+          "exactMatch": true
+        }
+      ],
+      "hint": "`INDEX(the RepIDs, MATCH(E121, the rep names, 0))`."
+    },
+    {
+      "id": "margin",
+      "ask": "**Margin** on order O1015 (row 16): revenue − quantity × unit cost.",
+      "answerCheck": [
+        {
+          "type": "value",
+          "expect": 427.5,
+          "tolerance": 0.005
+        },
+        {
+          "type": "formula-uses",
+          "oneOf": [
+            "VLOOKUP",
+            "XLOOKUP",
+            "INDEX"
+          ]
+        },
+        {
+          "type": "formula-uses",
+          "exactMatch": true
+        }
+      ],
+      "hint": "Revenue (price is column 5, minus the discount) − `G16*` the unit cost (column 4)."
+    }
+  ]
+}

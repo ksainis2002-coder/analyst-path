@@ -1,0 +1,615 @@
+{
+  "id": "mock-test",
+  "kind": "mock-test",
+  "level": null,
+  "title": "The mock hiring test",
+  "minutes": 45,
+  "passMark": 8,
+  "dataset": "aegean-messy",
+  "lab": {
+    "panels": [
+      "cleaning",
+      "pivot",
+      "chart"
+    ]
+  },
+  "key": "assignments/mock-test.key.json",
+  "intro": "This is the test the whole path has been building towards: **10 tasks in 45 minutes**, the way a practical Excel test for a junior analyst runs.\n\n- **Part 1 (7 tasks)** uses the clean order log: conditional totals and counts, logic, and lookups in every direction. Type each answer as a formula.\n- **Part 2 (3 tasks)** hands you the raw export: clean it, pivot it, chart it and write the sentence.\n\nThe clock starts when you press **Start** and doesn't stop, not even if you reload or close the tab. When it reaches zero, your answers are submitted as they are. You get **one submission per attempt**. The answer key appears after you submit, never before. **Pass: 8 of 10**, within the time.\n\nThere are two variants. Each retake uses the other one, so a second try tests the skills, not your memory of the answers. If you open a variant's key and later pass that same variant, the pass is recorded as *passed with help*.",
+  "pool": [
+    {
+      "id": "a-sumifs",
+      "slot": "sumifs",
+      "dataset": "aegean",
+      "ask": "Total **quantity** Sofia Papadaki sold through the **Field** channel.",
+      "answerCheck": [
+        {
+          "type": "value",
+          "expect": 250
+        },
+        {
+          "type": "formula-uses",
+          "oneOf": [
+            "SUMIFS"
+          ]
+        }
+      ],
+      "hint": "Two conditions: rep and channel. SUMIFS puts the range to add first."
+    },
+    {
+      "id": "b-sumifs",
+      "slot": "sumifs",
+      "dataset": "aegean",
+      "ask": "Total **quantity** of **P012** (Toner Cartridge) sold in **Attica**.",
+      "answerCheck": [
+        {
+          "type": "value",
+          "expect": 178
+        },
+        {
+          "type": "formula-uses",
+          "oneOf": [
+            "SUMIFS"
+          ]
+        }
+      ],
+      "hint": "Two conditions: product and region. SUMIFS puts the range to add first."
+    },
+    {
+      "id": "a-countifs",
+      "slot": "countifs",
+      "dataset": "aegean",
+      "ask": "How many **Partner** orders had a quantity of **10 or more**?",
+      "answerCheck": [
+        {
+          "type": "value",
+          "expect": 32
+        },
+        {
+          "type": "formula-uses",
+          "oneOf": [
+            "COUNTIFS"
+          ]
+        }
+      ],
+      "hint": "\"10 or more\" includes 10: the criterion is \">=10\", in quotes."
+    },
+    {
+      "id": "b-countifs",
+      "slot": "countifs",
+      "dataset": "aegean",
+      "ask": "How many **Online** orders came from **Macedonia**?",
+      "answerCheck": [
+        {
+          "type": "value",
+          "expect": 30
+        },
+        {
+          "type": "formula-uses",
+          "oneOf": [
+            "COUNTIFS"
+          ]
+        }
+      ],
+      "hint": "Count rows where both conditions hold."
+    },
+    {
+      "id": "a-logic",
+      "slot": "logic",
+      "dataset": "aegean",
+      "ask": "The average **quantity per Attica order**, rounded to **1 decimal place**.",
+      "answerCheck": [
+        {
+          "type": "value",
+          "expect": 19.8
+        },
+        {
+          "type": "formula-uses",
+          "functions": [
+            "ROUND"
+          ]
+        }
+      ],
+      "hint": "Attica's units ÷ Attica's orders, wrapped in ROUND(…,1)."
+    },
+    {
+      "id": "b-logic",
+      "slot": "logic",
+      "dataset": "aegean",
+      "ask": "Did Thessaly sell **at least 250 units** in total? Return **\"Yes\"** or **\"No\"**.",
+      "answerCheck": [
+        {
+          "type": "value",
+          "expect": "Yes"
+        },
+        {
+          "type": "formula-uses",
+          "functions": [
+            "IF"
+          ]
+        }
+      ],
+      "hint": "Units means the Quantity column, summed; not the number of orders."
+    },
+    {
+      "id": "a-vlookup",
+      "slot": "vlookup",
+      "dataset": "aegean",
+      "ask": "The **Category** of the product in order **O1033** (row 34). Lock the product table.",
+      "answerCheck": [
+        {
+          "type": "value",
+          "expect": "Furniture"
+        },
+        {
+          "type": "formula-uses",
+          "oneOf": [
+            "VLOOKUP"
+          ],
+          "exactMatch": true,
+          "lockedRanges": [
+            "J:N"
+          ]
+        }
+      ],
+      "hint": "Category is the 3rd column of J:N. End with FALSE."
+    },
+    {
+      "id": "b-vlookup",
+      "slot": "vlookup",
+      "dataset": "aegean",
+      "ask": "The **ListPrice** of the product in order **O1077** (row 78). Lock the product table.",
+      "answerCheck": [
+        {
+          "type": "value",
+          "expect": 1299
+        },
+        {
+          "type": "formula-uses",
+          "oneOf": [
+            "VLOOKUP"
+          ],
+          "exactMatch": true,
+          "lockedRanges": [
+            "J:N"
+          ]
+        }
+      ],
+      "hint": "ListPrice is the 5th column of J:N; UnitCost is the 4th. End with FALSE."
+    },
+    {
+      "id": "a-approx",
+      "slot": "approx",
+      "dataset": "aegean",
+      "ask": "The discount **Band** for order **O1146**'s quantity (row 147), from the Tiers table.",
+      "answerCheck": [
+        {
+          "type": "value",
+          "expect": "Trade"
+        },
+        {
+          "type": "formula-uses",
+          "oneOf": [
+            "VLOOKUP",
+            "XLOOKUP",
+            "INDEX"
+          ]
+        }
+      ],
+      "hint": "Tiers are bands, so this is an approximate match (TRUE): the largest MinQty ≤ the quantity."
+    },
+    {
+      "id": "b-approx",
+      "slot": "approx",
+      "dataset": "aegean",
+      "ask": "The discount **Band** for order **O1169**'s quantity (row 170), from the Tiers table.",
+      "answerCheck": [
+        {
+          "type": "value",
+          "expect": "Wholesale"
+        },
+        {
+          "type": "formula-uses",
+          "oneOf": [
+            "VLOOKUP",
+            "XLOOKUP",
+            "INDEX"
+          ]
+        }
+      ],
+      "hint": "Tiers are bands, so this is an approximate match (TRUE): the largest MinQty ≤ the quantity."
+    },
+    {
+      "id": "a-index",
+      "slot": "index-match",
+      "dataset": "aegean",
+      "ask": "The **RepID** of the rep on order **O1150** (row 151). The Reps table has RepID to the *left* of RepName.",
+      "answerCheck": [
+        {
+          "type": "value",
+          "expect": "R02"
+        },
+        {
+          "type": "formula-uses",
+          "oneOf": [
+            "INDEX",
+            "XLOOKUP"
+          ],
+          "exactMatch": true
+        }
+      ],
+      "hint": "Search RepName (Q), return RepID (P): INDEX/MATCH with 0, or XLOOKUP."
+    },
+    {
+      "id": "b-index",
+      "slot": "index-match",
+      "dataset": "aegean",
+      "ask": "The **ProductID** of **Headset Pro**. ProductID is to the *left* of ProductName.",
+      "answerCheck": [
+        {
+          "type": "value",
+          "expect": "P007"
+        },
+        {
+          "type": "formula-uses",
+          "oneOf": [
+            "INDEX",
+            "XLOOKUP"
+          ],
+          "exactMatch": true
+        }
+      ],
+      "hint": "Search ProductName (K), return ProductID (J): INDEX/MATCH with 0, or XLOOKUP."
+    },
+    {
+      "id": "a-lookup-math",
+      "slot": "lookup-math",
+      "dataset": "aegean",
+      "ask": "The **margin** on order **O1060** (row 61): revenue after discount, minus quantity × UnitCost.",
+      "answerCheck": [
+        {
+          "type": "value",
+          "expect": 694.4499999999998,
+          "tolerance": 0.01
+        },
+        {
+          "type": "formula-uses",
+          "oneOf": [
+            "VLOOKUP",
+            "XLOOKUP",
+            "INDEX"
+          ]
+        }
+      ],
+      "hint": "Revenue = Quantity × ListPrice × (1 − Discount); then subtract Quantity × UnitCost."
+    },
+    {
+      "id": "b-lookup-math",
+      "slot": "lookup-math",
+      "dataset": "aegean",
+      "ask": "The **revenue** of order **O1141** (row 142), showing **0** if its product isn't in the price list.",
+      "answerCheck": [
+        {
+          "type": "value",
+          "expect": 0
+        },
+        {
+          "type": "formula-uses",
+          "functions": [
+            "IFERROR"
+          ],
+          "oneOf": [
+            "VLOOKUP",
+            "XLOOKUP",
+            "INDEX"
+          ]
+        }
+      ],
+      "hint": "Wrap the whole revenue formula in IFERROR(…, 0)."
+    },
+    {
+      "id": "a-clean-1",
+      "slot": "clean-1",
+      "ask": "**Clean, part 1:** remove the duplicated orders and fill the blank regions (from each order's rep).",
+      "answerCheck": {
+        "type": "cleaning-done",
+        "defects": [
+          {
+            "id": "dup-o1034",
+            "label": "a duplicated order"
+          },
+          {
+            "id": "dup-o1121",
+            "label": "a duplicated order"
+          },
+          {
+            "id": "blank-region-o1057",
+            "label": "a blank Region"
+          },
+          {
+            "id": "blank-region-o1098",
+            "label": "a blank Region"
+          }
+        ]
+      },
+      "hint": "Remove Duplicates (every column); then fill only the blank Regions with a lookup of the rep's name in Q:R."
+    },
+    {
+      "id": "a-clean-2",
+      "slot": "clean-2",
+      "ask": "**Clean, part 2:** standardise the region names, make every quantity a number, and fix the mistyped ProductID and the date in the wrong year.",
+      "answerCheck": {
+        "type": "cleaning-done",
+        "defects": [
+          {
+            "id": "spaces-o1012",
+            "label": "a region with stray spaces or the wrong case"
+          },
+          {
+            "id": "caps-o1076",
+            "label": "a region with stray spaces or the wrong case"
+          },
+          {
+            "id": "lower-o1140",
+            "label": "a region with stray spaces or the wrong case"
+          },
+          {
+            "id": "text-qty-o1045",
+            "label": "a quantity stored as text"
+          },
+          {
+            "id": "text-qty-o1150",
+            "label": "a quantity stored as text"
+          },
+          {
+            "id": "typo-product-o1088",
+            "label": "a mistyped ProductID"
+          },
+          {
+            "id": "future-date-o1170",
+            "label": "a date in the wrong year"
+          }
+        ]
+      },
+      "hint": "TRIM(PROPER()) down D; Convert to Number on G; Find & Replace in C (whole cell); sort by Date to find the 2026 slip."
+    },
+    {
+      "id": "b-clean-1",
+      "slot": "clean-1",
+      "ask": "**Clean, part 1:** standardise the region names and make every quantity a number.",
+      "answerCheck": {
+        "type": "cleaning-done",
+        "defects": [
+          {
+            "id": "spaces-o1012",
+            "label": "a region with stray spaces or the wrong case"
+          },
+          {
+            "id": "caps-o1076",
+            "label": "a region with stray spaces or the wrong case"
+          },
+          {
+            "id": "lower-o1140",
+            "label": "a region with stray spaces or the wrong case"
+          },
+          {
+            "id": "text-qty-o1045",
+            "label": "a quantity stored as text"
+          },
+          {
+            "id": "text-qty-o1150",
+            "label": "a quantity stored as text"
+          }
+        ]
+      },
+      "hint": "TRIM(PROPER()) filled down D; Convert to Number on G."
+    },
+    {
+      "id": "b-clean-2",
+      "slot": "clean-2",
+      "ask": "**Clean, part 2:** remove the duplicated orders, fill the blank regions (from each order's rep), and fix the mistyped ProductID and the date in the wrong year.",
+      "answerCheck": {
+        "type": "cleaning-done",
+        "defects": [
+          {
+            "id": "dup-o1034",
+            "label": "a duplicated order"
+          },
+          {
+            "id": "dup-o1121",
+            "label": "a duplicated order"
+          },
+          {
+            "id": "blank-region-o1057",
+            "label": "a blank Region"
+          },
+          {
+            "id": "blank-region-o1098",
+            "label": "a blank Region"
+          },
+          {
+            "id": "typo-product-o1088",
+            "label": "a mistyped ProductID"
+          },
+          {
+            "id": "future-date-o1170",
+            "label": "a date in the wrong year"
+          }
+        ]
+      },
+      "hint": "Remove Duplicates; lookup into the blank Regions; Find & Replace in C (whole cell); sort by Date to find the 2026 slip."
+    },
+    {
+      "id": "a-pivot-story",
+      "slot": "pivot-story",
+      "ask": "**Pivot and slide:** total **Margin by Category** on the cleaned data (no % view), charted so the top category stands out, with a finding title and the sentence completed.",
+      "answerCheck": [
+        {
+          "type": "pivot-state",
+          "expect": {
+            "rows": "Category",
+            "columns": "",
+            "value": "Margin",
+            "agg": "sum",
+            "showAs": "none",
+            "filter": null
+          },
+          "tolerance": 0.01,
+          "totals": {
+            "Computers": 39143.15,
+            "Furniture": 22643.35,
+            "Peripherals": 58721.6,
+            "Printing": 16132.4,
+            "(blank)": 0,
+            "Grand Total": 136640.5
+          }
+        },
+        {
+          "type": "story",
+          "series": "Grand Total",
+          "chart": [
+            "column",
+            "bar"
+          ],
+          "sort": "desc",
+          "titleMentions": [
+            "Peripherals"
+          ],
+          "blanks": {
+            "top": "Peripherals",
+            "amount": {
+              "expect": 58721.6,
+              "tolerance": 1,
+              "label": "margin"
+            }
+          }
+        }
+      ],
+      "hint": "Rows: Category; Values: Sum of Margin; refreshed after cleaning. Columns or bars, largest first; the title names the top category.",
+      "story": {
+        "sentence": "{top} earned the most margin in 2025: €{amount}.",
+        "blanks": {
+          "top": {
+            "type": "choice",
+            "options": [
+              "Computers",
+              "Furniture",
+              "Peripherals",
+              "Printing"
+            ],
+            "label": "category"
+          },
+          "amount": {
+            "type": "number",
+            "label": "margin in euros"
+          }
+        }
+      }
+    },
+    {
+      "id": "b-pivot-story",
+      "slot": "pivot-story",
+      "ask": "**Pivot and slide:** total **Revenue by Rep** on the cleaned data (no % view), charted so the top rep stands out, with a finding title and the sentence completed.",
+      "answerCheck": [
+        {
+          "type": "pivot-state",
+          "expect": {
+            "rows": "Rep",
+            "columns": "",
+            "value": "Revenue",
+            "agg": "sum",
+            "showAs": "none",
+            "filter": null
+          },
+          "tolerance": 0.01,
+          "totals": {
+            "Dimitra Georgiou": 53863.1,
+            "Eleni Makri": 86740.9,
+            "Giorgos Nikolaou": 65511.9,
+            "Kostas Alexiou": 42716.25,
+            "Maria Ioannou": 44282.85,
+            "Nikos Petrou": 37838.95,
+            "Sofia Papadaki": 60894.55,
+            "Grand Total": 391848.5
+          }
+        },
+        {
+          "type": "story",
+          "series": "Grand Total",
+          "chart": [
+            "column",
+            "bar"
+          ],
+          "sort": "desc",
+          "titleMentions": [
+            "Makri"
+          ],
+          "blanks": {
+            "top": "Eleni Makri",
+            "amount": {
+              "expect": 86740.9,
+              "tolerance": 1,
+              "label": "revenue"
+            }
+          }
+        }
+      ],
+      "hint": "Rows: Rep; Values: Sum of Revenue; refreshed after cleaning. Columns or bars, largest first; the title names the top rep.",
+      "story": {
+        "sentence": "{top} brought in the most revenue in 2025: €{amount}.",
+        "blanks": {
+          "top": {
+            "type": "choice",
+            "options": [
+              "Eleni Makri",
+              "Nikos Petrou",
+              "Maria Ioannou",
+              "Giorgos Nikolaou",
+              "Dimitra Georgiou",
+              "Kostas Alexiou",
+              "Sofia Papadaki"
+            ],
+            "label": "rep"
+          },
+          "amount": {
+            "type": "number",
+            "label": "revenue in euros"
+          }
+        }
+      }
+    }
+  ],
+  "variants": [
+    {
+      "id": "A",
+      "label": "Variant A",
+      "tasks": [
+        "a-sumifs",
+        "a-countifs",
+        "a-logic",
+        "a-vlookup",
+        "a-approx",
+        "a-index",
+        "a-lookup-math",
+        "a-clean-1",
+        "a-clean-2",
+        "a-pivot-story"
+      ]
+    },
+    {
+      "id": "B",
+      "label": "Variant B",
+      "tasks": [
+        "b-sumifs",
+        "b-countifs",
+        "b-logic",
+        "b-vlookup",
+        "b-approx",
+        "b-index",
+        "b-lookup-math",
+        "b-clean-1",
+        "b-clean-2",
+        "b-pivot-story"
+      ]
+    }
+  ]
+}

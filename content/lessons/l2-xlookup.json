@@ -1,0 +1,166 @@
+{
+  "dataset": "aegean",
+  "id": "l2-xlookup",
+  "level": 2,
+  "order": 3,
+  "title": "XLOOKUP: the modern lookup (and its catch)",
+  "estMinutes": 12,
+  "concept": "`XLOOKUP` fixes VLOOKUP's three weak spots. You point at the **search column** and the **return column** separately, so there's no column counting, and the return column can be on **either side**. It's an **exact match by default**. And it has a built-in **\"if not found\"** result.\n\n`=XLOOKUP(C2,$J$2:$J$15,$K$2:$K$15)` returns the name for O1001's product ({{=XLOOKUP(C2,$J$2:$J$15,$K$2:$K$15)}}).\n`=XLOOKUP(\"Standing Desk\",$K$2:$K$15,$J$2:$J$15)` looks **left**: name → ID ({{=XLOOKUP(\"Standing Desk\",$K$2:$K$15,$J$2:$J$15)}}).\n\n> [!warn] **Version check before the test.** XLOOKUP only exists in **Excel 365, Excel 2021 and later, and Google Sheets**. In Excel 2016 or 2019 it's an unknown function and gives **#NAME?**. Ask which version the test uses, and keep VLOOKUP and INDEX/MATCH ready. This app's console runs XLOOKUP so you can learn it, but your test machine might not.",
+  "syntax": [
+    {
+      "signature": "=XLOOKUP(lookup_value, lookup_array, return_array, [if_not_found])",
+      "args": [
+        {
+          "name": "lookup_value",
+          "desc": "what to find"
+        },
+        {
+          "name": "lookup_array",
+          "desc": "the one column to search, e.g. `$J$2:$J$15`"
+        },
+        {
+          "name": "return_array",
+          "desc": "the column to return from, the same height, on either side"
+        },
+        {
+          "name": "if_not_found",
+          "desc": "optional: what to show instead of #N/A, e.g. `\"Not found\"`"
+        }
+      ]
+    }
+  ],
+  "worked": {
+    "prompt": "Return the product name for order O1001 (row 2) with XLOOKUP.",
+    "formula": "=XLOOKUP(C2,$J$2:$J$15,$K$2:$K$15)",
+    "explain": "Search C2 ({{=C2}}) down the ID column, return from the name column in the same position: **{{=XLOOKUP(C2,$J$2:$J$15,$K$2:$K$15)}}**. Same answer as the VLOOKUP, with nothing to count.",
+    "expect": "Laptop Pro 14"
+  },
+  "mistakes": [
+    "Search and return columns of different heights (`$J$2:$J$15` with `$K$2:$K$16`). Keep them the same size.",
+    "Relying on XLOOKUP in a test on Excel 2016/2019: #NAME?. Check the version first.",
+    "Passing a whole table as the return array when you meant one column."
+  ],
+  "drills": [
+    {
+      "id": "xl-price",
+      "ask": "With **XLOOKUP**, return the list price of the product on order O1003 (row 4).",
+      "starter": "",
+      "answerCheck": [
+        {
+          "type": "value",
+          "expect": 89
+        },
+        {
+          "type": "formula-uses",
+          "functions": [
+            "XLOOKUP"
+          ]
+        }
+      ],
+      "hint": "Search `$J$2:$J$15`, return from `$N$2:$N$15`.",
+      "solution": "=XLOOKUP(C4,$J$2:$J$15,$N$2:$N$15)"
+    },
+    {
+      "id": "xl-left",
+      "ask": "Which **ProductID** belongs to \"LED Desk Lamp\"? (The ID column is to the *left* of the names.)",
+      "starter": "",
+      "answerCheck": [
+        {
+          "type": "value",
+          "expect": "P014"
+        },
+        {
+          "type": "formula-uses",
+          "functions": [
+            "XLOOKUP"
+          ]
+        }
+      ],
+      "hint": "Search the names (`$K$2:$K$15`) and return from the IDs (`$J$2:$J$15`). XLOOKUP doesn't mind which side.",
+      "solution": "=XLOOKUP(\"LED Desk Lamp\",$K$2:$K$15,$J$2:$J$15)"
+    },
+    {
+      "id": "xl-not-found",
+      "ask": "Order O1141 (row 142) uses a product that isn't in the price list yet. Return its product name with XLOOKUP, showing `\"Not in price list\"` instead of #N/A.",
+      "starter": "",
+      "answerCheck": [
+        {
+          "type": "value",
+          "expect": "Not in price list"
+        },
+        {
+          "type": "formula-uses",
+          "functions": [
+            "XLOOKUP"
+          ]
+        }
+      ],
+      "hint": "Use XLOOKUP's 4th argument, if_not_found: `\"Not in price list\"`.",
+      "solution": "=XLOOKUP(C142,$J$2:$J$15,$K$2:$K$15,\"Not in price list\")"
+    },
+    {
+      "id": "xl-rep-id",
+      "ask": "What's the **RepID** of the rep on order O1001 (row 2)? Rep names are in `Q2:Q8`, IDs to their left in `P2:P8`.",
+      "starter": "",
+      "answerCheck": [
+        {
+          "type": "value",
+          "expect": "R01"
+        },
+        {
+          "type": "formula-uses",
+          "functions": [
+            "XLOOKUP"
+          ]
+        }
+      ],
+      "hint": "Search E2's name in the rep names, return from the RepIDs.",
+      "solution": "=XLOOKUP(E2,$Q$2:$Q$8,$P$2:$P$8)"
+    }
+  ],
+  "checkpoint": {
+    "type": "quiz",
+    "passMark": 2,
+    "questions": [
+      {
+        "id": "version",
+        "prompt": "Your XLOOKUP works at home, but the test laptop runs Excel 2016 and shows #NAME?. Why?",
+        "options": [
+          "The formula has a typo",
+          "XLOOKUP doesn't exist before Excel 2021/365, so Excel doesn't recognise the name",
+          "The table isn't locked",
+          "Excel 2016 needs FALSE at the end"
+        ],
+        "answer": 1,
+        "explain": "#NAME? means Excel doesn't know the function. Fall back to VLOOKUP or INDEX/MATCH."
+      },
+      {
+        "id": "default",
+        "prompt": "By default, is XLOOKUP an exact or an approximate match?",
+        "options": [
+          "Exact",
+          "Approximate",
+          "It depends on sorting",
+          "Neither"
+        ],
+        "answer": 0,
+        "explain": "Exact by default, unlike VLOOKUP, which is approximate when the 4th argument is left out."
+      },
+      {
+        "id": "not-found",
+        "prompt": "What does `=XLOOKUP(\"P999\",$J$2:$J$15,$K$2:$K$15,\"None\")` return?",
+        "options": [
+          "0",
+          "None",
+          "#N/A",
+          "P999"
+        ],
+        "answer": 1,
+        "explain": "P999 isn't in the list, so XLOOKUP returns the if_not_found value.",
+        "verify": "=XLOOKUP(\"P999\",$J$2:$J$15,$K$2:$K$15,\"None\")"
+      }
+    ]
+  },
+  "claimAfter": "I can look up in any direction with XLOOKUP, with a built-in 'not found' result, and I know which Excel versions have it.",
+  "notYet": "XLOOKUP's match_mode and search_mode options (approximate, wildcards, last-to-first). Rarely needed in tests."
+}

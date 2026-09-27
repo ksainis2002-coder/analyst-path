@@ -1,0 +1,10 @@
+{
+  "name": "analyst-path",
+  "private": true,
+  "type": "module",
+  "description": "Static app, no dependencies. This file only tells Node to treat .js as ES modules.",
+  "scripts": {
+    "test": "node content/_generators/aegean.mjs --check && node js/engine.test.js && node js/router.test.js && node js/progress.test.js && node js/grader.test.js && node js/data.test.js && node js/content.test.js && node js/ui/ui.test.js && node js/ui/models.test.js && node js/ui/report.test.js && node js/ui/ui.dom.test.js && node js/ui/lesson.dom.test.js && node js/ui/assignment.dom.test.js && node js/ui/workbench.dom.test.js && node js/ui/capstone.dom.test.js && node js/ui/report.dom.test.js",
+    "start": "python3 -m http.server 8000"
+  }
+}

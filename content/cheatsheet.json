@@ -1,0 +1,50 @@
+{
+  "schema": 1,
+  "_note": "The printable one-page cheat-sheet (spec §5.1 assets/cheat-sheet, §11 Phase 9). DATA, not code. Every `formula` is run against the Aegean data by js/content.test.js; `expect` pins the result where the sheet states one. References use the practice sheet's layout: orders A:H (rows 2–181), products J:N, reps P:T, tiers V:X.",
+  "title": "Excel for analysts: the one-page cheat-sheet",
+  "subtitle": "The Analyst Path · every formula here is tested against the practice data",
+  "blocks": [
+    { "title": "Summarise", "rows": [
+      { "formula": "=SUMIFS(G2:G181,D2:D181,\"Crete\")", "what": "Add up where conditions hold. The range to add comes FIRST." },
+      { "formula": "=SUMIF(D2:D181,\"Crete\",G2:G181)", "what": "Older one-condition form: range to add comes LAST." },
+      { "formula": "=COUNTIFS(D2:D181,\"Attica\",G2:G181,\">=25\")", "what": "Count rows meeting every condition. Comparisons go in quotes." },
+      { "formula": "=IF(G2>10,\"HIGH\",\"OK\")", "what": "One decision: TRUE → first value, FALSE → second." },
+      { "formula": "=ROUND(AVERAGE(G2:G181),1)", "what": "Mean, rounded to 1 decimal (half away from zero)." },
+      { "formula": "=IFERROR(VLOOKUP(\"P016\",$J$2:$N$15,2,FALSE),\"Not found\")", "what": "Replace an error (#N/A…) with a fallback." }
+    ] },
+    { "title": "Look up", "rows": [
+      { "formula": "=VLOOKUP(C2,$J$2:$N$15,2,FALSE)", "what": "Search the table's FIRST column, return column 2. FALSE = exact." },
+      { "formula": "=VLOOKUP(G2,$V$2:$X$5,2,TRUE)", "what": "Approximate: largest MinQty ≤ the value (bands, tiers). First column sorted." },
+      { "formula": "=XLOOKUP(C2,$J$2:$J$15,$N$2:$N$15,\"Not found\")", "what": "Any direction, exact by default. Excel 365/2021+ and Sheets only." },
+      { "formula": "=INDEX($P$2:$P$8,MATCH(E2,$Q$2:$Q$8,0))", "what": "Look LEFT: MATCH finds the row (0 = exact), INDEX returns it." },
+      { "formula": "=G2*VLOOKUP(C2,$J$2:$N$15,5,FALSE)*(1-H2)", "what": "Lookups inside maths: revenue after discount." }
+    ] },
+    { "title": "Clean", "rows": [
+      { "formula": "=TRIM(PROPER(D2))", "what": "\" attica \" → \"Attica\". Helper column, then Paste Special ▸ Values." },
+      { "formula": "=VALUE(G2)", "what": "Number stored as text → number (or ⚠ ▸ Convert to Number)." },
+      { "formula": "=COUNTIF(A:A,A2)", "what": "More than 1 = this ID is duplicated." },
+      { "menu": "Data ▸ Remove Duplicates", "what": "Tick every column (or the ID). Ticking only Region deletes real rows." },
+      { "menu": "F5 ▸ Special ▸ Blanks, type, Ctrl+Enter", "what": "Fill every selected blank at once, from a reliable source." },
+      { "menu": "Ctrl+H ▸ Options ▸ Match entire cell contents", "what": "Scope Find & Replace to a column, then check the count." }
+    ] },
+    { "title": "Pivot and present", "rows": [
+      { "menu": "Insert ▸ PivotTable", "what": "Rows / Columns / Values. A pivot cell is a SUMIFS." },
+      { "menu": "Right-click a date ▸ Group ▸ Quarters", "what": "Qtr1–Qtr4 (Sheets: Create pivot date group)." },
+      { "menu": "Right-click ▸ Show Values As ▸ % of Grand Total", "what": "Or % of Column Total for 'share within each quarter'." },
+      { "menu": "Right-click ▸ Refresh (Alt+F5)", "what": "Excel pivots DON'T update themselves. Sheets pivots do." },
+      { "menu": "Categories → bars, sorted. Time → a line.", "what": "Title = the finding (\"Macedonia now leads\"), plus one sentence with the number." }
+    ] }
+  ],
+  "mistakes": [
+    ["No FALSE in VLOOKUP", "Approximate match: a silent wrong answer", "End exact lookups with FALSE (or 0)"],
+    ["Unlocked lookup table", "The table drifts when copied down: wrong rows or #N/A", "Lock it: $J$2:$N$15 (F4)"],
+    ["Wrong column number", "It counts from the table's left edge", "Recount from the table's first column"],
+    ["SUMIF vs SUMIFS order", "Sum range is last in SUMIF, first in SUMIFS", "SUMIFS: what to add comes first"],
+    ["Number stored as text", "SUM and pivots skip it: totals come up short", "Convert to Number / VALUE()"],
+    ["Criteria not in quotes", ">=25 without quotes is an error", "\">=25\", \"Crete\""],
+    ["Stale pivot", "Data fixed, pivot still shows old numbers", "Refresh after every data change"],
+    ["Lowest revenue ≠ furthest behind", "Absolute numbers hide targets", "Compare against target: actual ÷ target"]
+  ],
+  "keys": [["F4", "cycle $ locks"], ["Ctrl+Enter", "fill the selection"], ["Ctrl+H", "Find & Replace"], ["Alt+F5", "refresh a pivot"], ["Ctrl+Shift+V", "paste values (Sheets)"]],
+  "honest": "Claim a skill only once you've done it without help, under time. Your readiness report says which ones you have."
+}

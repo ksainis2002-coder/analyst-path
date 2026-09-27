@@ -1,0 +1,133 @@
+{
+  "dataset": "aegean",
+  "id": "l0-absolute-refs",
+  "level": 0,
+  "order": 3,
+  "title": "The $ sign: relative vs absolute references",
+  "estMinutes": 10,
+  "concept": "When you copy a formula down a column, Excel shifts its references with it. `=G2*N2` in row 2, copied to row 3, becomes `=G3*N3`. That's what you want for the quantity (each row uses its own), but wrong for the price if every row should use the same price in N2.\n\nA `$` **locks** the part right after it. `$N$2` means \"always N2\", however far you copy. That's an **absolute** reference; plain `N2` is **relative**.\n\n- `N2`: column and row both move when copied\n- `$N$2`: nothing moves. Use it for a fixed rate, a single price or a lookup table\n- `$N2` or `N$2`: mixed: only the column, or only the row, is locked\n\n> [!excel] In Excel, click a reference in the formula bar and press **F4** to cycle `N2 → $N$2 → N$2 → $N2`. On a Mac it's **Cmd+T**. Google Sheets uses F4 too.\n\nThis console runs one formula at a time, so it can't copy formulas down the way Excel does. The drills check that you lock the right cell. That habit is what matters, and in Level 2 you'll lock whole lookup tables the same way.",
+  "syntax": [
+    {
+      "signature": "=G2*$N$2",
+      "args": [
+        {
+          "name": "G2",
+          "desc": "relative: becomes G3, G4, … as you copy down"
+        },
+        {
+          "name": "$N$2",
+          "desc": "absolute: stays N2 in every row"
+        }
+      ]
+    }
+  ],
+  "worked": {
+    "prompt": "A quick what-if: value every order at the Laptop Pro 14 list price in N2. Write the row-2 formula so it can be copied down.",
+    "formula": "=G2*$N$2",
+    "explain": "`G2` is relative, so in row 3 it becomes `G3`: each row uses its own quantity. `$N$2` is absolute, so every row keeps the Laptop price. Row 2: {{=G2}} × {{=N2}} = **{{=G2*$N$2}}**.",
+    "expect": 12990
+  },
+  "mistakes": [
+    "Locking nothing: `=G2*N2` copied down becomes `=G3*N3`, which multiplies by the Monitor 27in price (N3).",
+    "Locking everything: `=$G$2*$N$2` copied down repeats row 2's quantity on every row.",
+    "Half a lock: `$N2` still lets the row move when you copy down."
+  ],
+  "drills": [
+    {
+      "id": "lock-price",
+      "ask": "What-if: value order O1011 (row 12) at the Laptop Pro 14 price in N2, with the price **locked** so the formula could be copied down.",
+      "starter": "",
+      "answerCheck": [
+        {
+          "type": "value",
+          "expect": 31176
+        },
+        {
+          "type": "formula-uses",
+          "absolute": [
+            "N2"
+          ]
+        }
+      ],
+      "hint": "Quantity `G12`, times the price with both parts locked: `$N$2`.",
+      "solution": "=G12*$N$2"
+    },
+    {
+      "id": "lock-price-2",
+      "ask": "Same again for order O1128 (row 129): its quantity times the locked Laptop price.",
+      "starter": "",
+      "answerCheck": [
+        {
+          "type": "value",
+          "expect": 15588
+        },
+        {
+          "type": "formula-uses",
+          "absolute": [
+            "N2"
+          ]
+        }
+      ],
+      "hint": "The quantity is in `G129`; keep `$N$2` locked.",
+      "solution": "=G129*$N$2"
+    },
+    {
+      "id": "lock-range",
+      "ask": "Total the whole Quantity column (G2 to G181) with both corners of the range locked.",
+      "starter": "",
+      "answerCheck": [
+        {
+          "type": "value",
+          "expect": 3513
+        },
+        {
+          "type": "formula-uses",
+          "functions": [
+            "SUM"
+          ]
+        },
+        {
+          "type": "formula-uses",
+          "absolute": [
+            "G2",
+            "G181"
+          ]
+        }
+      ],
+      "hint": "Lock both corners: `$G$2:$G$181`.",
+      "solution": "=SUM($G$2:$G$181)"
+    }
+  ],
+  "checkpoint": {
+    "type": "quiz",
+    "passMark": 2,
+    "questions": [
+      {
+        "id": "copy-down",
+        "prompt": "You copy `=G2*$N$2` from row 2 down to row 5. What does the row-5 copy say?",
+        "options": [
+          "`=G5*$N$2`",
+          "`=G5*$N$5`",
+          "`=G2*$N$2`",
+          "`=G5*N5`"
+        ],
+        "answer": 0,
+        "explain": "The relative `G2` moves down 3 rows to `G5`; the absolute `$N$2` stays put."
+      },
+      {
+        "id": "fully-locked",
+        "prompt": "Which reference stays exactly the same wherever you copy it?",
+        "options": [
+          "`N2`",
+          "`$N2`",
+          "`N$2`",
+          "`$N$2`"
+        ],
+        "answer": 3,
+        "explain": "Only `$N$2` locks both the column and the row."
+      }
+    ]
+  },
+  "claimAfter": "I know when to lock a reference with $ so a formula copies down correctly.",
+  "notYet": "Mixed references (`$N2`, `N$2`) in two-way tables. You'll lock whole lookup tables in Level 2."
+}

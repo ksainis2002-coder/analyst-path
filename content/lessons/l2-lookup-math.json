@@ -1,0 +1,176 @@
+{
+  "dataset": "aegean",
+  "id": "l2-lookup-math",
+  "level": 2,
+  "order": 5,
+  "title": "Lookups inside calculations: revenue and margin",
+  "estMinutes": 15,
+  "concept": "A lookup returns a value, so it can sit inside any calculation. The order log has quantity (G) and discount (H), but no price. The price is in the product table, so **revenue per order** is:\n\n`=G2*VLOOKUP(C2,$J$2:$N$15,5,FALSE)*(1-H2)` = quantity × list price × (1 − discount)\n\nFor order O1001 that's {{=G2}} × {{=VLOOKUP(C2,$J$2:$N$15,5,FALSE)}} × (1 − {{=H2}}) = **{{=G2*VLOOKUP(C2,$J$2:$N$15,5,FALSE)*(1-H2)}}**.\n\n**Margin** is revenue minus what the goods cost: `revenue − G2*VLOOKUP(C2,$J$2:$N$15,4,FALSE)`.\n\nWhen a lookup fails, the error spreads through the whole calculation. Order **O1141** (row 142) is for **{{=C142}}**, a new product that isn't in the price list yet, so its revenue formula gives #N/A, and any total built on it would too. Wrap the calculation: `=IFERROR(G142*VLOOKUP(…)*(1-H142),0)`, or flag it with text such as \"Price missing\" so someone fixes the price list.\n\n> [!tip] Write the formula for one row, check it by hand once, then lock the tables and copy it down. In Level 3 a pivot table will total these per region and month.",
+  "syntax": [
+    {
+      "signature": "=G2*VLOOKUP(C2, $J$2:$N$15, 5, FALSE)*(1-H2)",
+      "args": [
+        {
+          "name": "G2",
+          "desc": "quantity"
+        },
+        {
+          "name": "VLOOKUP(…,5,FALSE)",
+          "desc": "the looked-up list price"
+        },
+        {
+          "name": "(1-H2)",
+          "desc": "what's left after the discount (the brackets matter)"
+        }
+      ]
+    }
+  ],
+  "worked": {
+    "prompt": "What's the revenue on order O1001 (row 2)?",
+    "formula": "=G2*VLOOKUP(C2,$J$2:$N$15,5,FALSE)*(1-H2)",
+    "explain": "Quantity {{=G2}} × list price {{=VLOOKUP(C2,$J$2:$N$15,5,FALSE)}} × (1 − {{=H2}} discount) = **{{=G2*VLOOKUP(C2,$J$2:$N$15,5,FALSE)*(1-H2)}}**.",
+    "expect": 12340.5
+  },
+  "mistakes": [
+    "Forgetting the discount, or writing `*H2` (which *keeps* only the discount) instead of `*(1-H2)`.",
+    "Using column 4 (UnitCost) where you meant 5 (ListPrice). Revenue uses the price; margin uses both.",
+    "Hiding a missing price with IFERROR(…,0) and then forgetting about it. A 0 is silently wrong revenue; \"Price missing\" gets noticed."
+  ],
+  "drills": [
+    {
+      "id": "rev-row3",
+      "ask": "What's the **revenue** on order O1002 (row 3)? (quantity × list price × (1 − discount))",
+      "starter": "",
+      "answerCheck": [
+        {
+          "type": "value",
+          "expect": 786.5999999999999,
+          "tolerance": 0.005
+        },
+        {
+          "type": "formula-uses",
+          "oneOf": [
+            "VLOOKUP",
+            "XLOOKUP",
+            "INDEX"
+          ]
+        }
+      ],
+      "hint": "`G3 * (list price from the product table) * (1-H3)`.",
+      "solution": "=G3*VLOOKUP(C3,$J$2:$N$15,5,FALSE)*(1-H3)"
+    },
+    {
+      "id": "rev-discount",
+      "ask": "Revenue on order O1016 (row 17). It's a Trade-band order, so the discount matters.",
+      "starter": "",
+      "answerCheck": [
+        {
+          "type": "value",
+          "expect": 2002.5,
+          "tolerance": 0.005
+        },
+        {
+          "type": "formula-uses",
+          "oneOf": [
+            "VLOOKUP",
+            "XLOOKUP",
+            "INDEX"
+          ]
+        }
+      ],
+      "hint": "Don't forget `*(1-H17)`: this order gets {{=H17}} off.",
+      "solution": "=G17*VLOOKUP(C17,$J$2:$N$15,5,FALSE)*(1-H17)"
+    },
+    {
+      "id": "margin-row2",
+      "ask": "What's the **margin** on order O1001 (row 2)? (revenue − quantity × unit cost)",
+      "starter": "",
+      "answerCheck": [
+        {
+          "type": "value",
+          "expect": 2540.5,
+          "tolerance": 0.005
+        },
+        {
+          "type": "formula-uses",
+          "oneOf": [
+            "VLOOKUP",
+            "XLOOKUP",
+            "INDEX"
+          ]
+        }
+      ],
+      "hint": "Revenue as before, minus `G2*` the unit cost (column 4).",
+      "solution": "=G2*VLOOKUP(C2,$J$2:$N$15,5,FALSE)*(1-H2)-G2*VLOOKUP(C2,$J$2:$N$15,4,FALSE)"
+    },
+    {
+      "id": "rev-missing",
+      "ask": "Revenue on order O1141 (row 142), whose product isn't in the price list: make it show **0** instead of #N/A.",
+      "starter": "",
+      "answerCheck": [
+        {
+          "type": "value",
+          "expect": 0
+        },
+        {
+          "type": "formula-uses",
+          "functions": [
+            "IFERROR"
+          ],
+          "oneOf": [
+            "VLOOKUP",
+            "XLOOKUP",
+            "INDEX"
+          ]
+        }
+      ],
+      "hint": "Wrap the whole revenue formula in `IFERROR( … , 0)`.",
+      "solution": "=IFERROR(G142*VLOOKUP(C142,$J$2:$N$15,5,FALSE)*(1-H142),0)"
+    }
+  ],
+  "checkpoint": {
+    "type": "quiz",
+    "passMark": 2,
+    "questions": [
+      {
+        "id": "why-iferror",
+        "prompt": "Why wrap the revenue for order O1141 in IFERROR?",
+        "options": [
+          "It makes the formula faster",
+          "Its product isn't in the price list, so the lookup returns #N/A, which would break any total",
+          "IFERROR rounds the result",
+          "To make the lookup exact"
+        ],
+        "answer": 1,
+        "explain": "One #N/A spreads into every sum that includes it."
+      },
+      {
+        "id": "rev-o1001",
+        "prompt": "What's order O1001's revenue?",
+        "options": [
+          "9310",
+          "12340.5",
+          "12990",
+          "649.5"
+        ],
+        "answer": 1,
+        "explain": "Quantity × list price × (1 − discount).",
+        "verify": "=G2*VLOOKUP(C2,$J$2:$N$15,5,FALSE)*(1-H2)"
+      },
+      {
+        "id": "which-formula",
+        "prompt": "Which formula gives revenue for row 2?",
+        "options": [
+          "`=G2*VLOOKUP(C2,$J$2:$N$15,5,FALSE)*(1-H2)`",
+          "`=G2*VLOOKUP(C2,$J$2:$N$15,5,FALSE)*H2`",
+          "`=G2*VLOOKUP(C2,$J$2:$N$15,4,FALSE)*(1-H2)`",
+          "`=G2+VLOOKUP(C2,$J$2:$N$15,5,FALSE)`"
+        ],
+        "answer": 0,
+        "explain": "List price is column 5; the discount is taken off with `(1-H2)`."
+      }
+    ]
+  },
+  "claimAfter": "I can combine lookups with arithmetic to calculate revenue and margin per order, and handle IDs that aren't found.",
+  "notYet": "Totalling revenue across all orders at once, by region or month. That's what pivot tables do, in Level 3."
+}

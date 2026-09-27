@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>The Analyst Path</title>
+  <meta name="description" content="Get genuinely ready for a junior-analyst Excel test: live formulas, graded assignments, a timed mock test.">
+  <meta name="theme-color" content="#f7f5ef">
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="assets/favicon-32.png" type="image/png" sizes="32x32">
+  <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+  <!-- Link previews. og:image must be an ABSOLUTE URL for most sites: after publishing, replace
+       "assets/og-image.png" with e.g. https://<user>.github.io/<repo>/assets/og-image.png (see README → Publish). -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="The Analyst Path: get genuinely ready for the Excel test">
+  <meta property="og:description" content="Lookups, SUMIFS, cleaning, pivots and a timed mock test. Every formula runs live, and every claim is earned.">
+  <meta property="og:image" content="assets/og-image.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="The Analyst Path: Get genuinely ready for the Excel test.">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap">
+  <link rel="stylesheet" href="css/tokens.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/components.css">
+  <script type="module" src="js/app.js"></script>
+</head>
+<body>
+  <!-- App shell only. Every view is rendered by js/app.js from content/curriculum.json. -->
+  <a class="skip-link" href="#main" data-skip>Skip to content</a>
+
+  <header class="rail">
+    <div class="container rail__inner">
+      <a class="brand" href="#/">The Analyst Path<span class="brand__mark" aria-hidden="true">.</span></a>
+      <nav class="level-nav" id="level-nav" aria-label="Levels"></nav>
+      <div class="meter" id="progress-meter" aria-live="polite"></div>
+    </div>
+  </header>
+
+  <div class="container notices" id="notices" role="status"></div>
+
+  <main id="main" tabindex="-1">
+    <div class="container view">
+      <p class="muted" id="boot-message">Loading…</p>
+      <noscript><p>The Analyst Path needs JavaScript to run the live formula console.</p></noscript>
+    </div>
+  </main>
+  <script>
+    // Browsers refuse to load ES modules from file:// pages, so app.js never runs there.
+    // This classic inline script still does, and explains how to open the app properly.
+    if (location.protocol === "file:") {
+      document.getElementById("boot-message").innerHTML =
+        "This app has to be opened through a local web server, not by double-clicking index.html. " +
+        "In this folder run <code>python3 -m http.server 8000</code>, then open <code>http://localhost:8000</code>.";
+    }
+  </script>
+
+  <footer class="site-footer">
+    <div class="container" id="footer"></div>
+  </footer>
+</body>
+</html>

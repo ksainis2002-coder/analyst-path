@@ -1,0 +1,199 @@
+{
+  "dataset": "aegean",
+  "id": "l2-index-match",
+  "level": 2,
+  "order": 4,
+  "title": "INDEX/MATCH: the lookup that works everywhere",
+  "estMinutes": 15,
+  "concept": "INDEX/MATCH is two small functions working together:\n\n- `MATCH(value, column, 0)` answers **where**: the *position* of the value in a column. `MATCH(\"P007\",$J$2:$J$15,0)` is **{{=MATCH(\"P007\",$J$2:$J$15,0)}}**.\n- `INDEX(column, position)` answers **what**: the value at that position. `INDEX($K$2:$K$15,7)` is **{{=INDEX($K$2:$K$15,7)}}**.\n\nPut MATCH inside INDEX and you have a lookup: `INDEX(return_column, MATCH(value, search_column, 0))`. Because the two columns are separate, it looks **left** as easily as right, and unlike XLOOKUP it works in **every** version of Excel. Interviewers know that, which is why they respect it.\n\nMATCH's third argument works like VLOOKUP's fourth: **0 = exact**. Leave it out and MATCH does an approximate match.\n\nINDEX can also take a whole table plus a column number: `=INDEX($J$2:$N$15, MATCH(\"P012\",$J$2:$J$15,0), 4)` returns P012's unit cost ({{=INDEX($J$2:$N$15,MATCH(\"P012\",$J$2:$J$15,0),4)}}).",
+  "syntax": [
+    {
+      "signature": "=INDEX(return_range, MATCH(lookup_value, lookup_range, 0))",
+      "args": [
+        {
+          "name": "return_range",
+          "desc": "the column to return from (either side of the search column)"
+        },
+        {
+          "name": "lookup_value",
+          "desc": "what to find"
+        },
+        {
+          "name": "lookup_range",
+          "desc": "the column to search"
+        }
+      ]
+    },
+    {
+      "signature": "=MATCH(lookup_value, lookup_range, match_type)",
+      "args": [
+        {
+          "name": "match_type",
+          "desc": "`0` = exact. Always, for IDs and names"
+        }
+      ]
+    }
+  ],
+  "worked": {
+    "prompt": "Which ProductID has the list price 549?",
+    "formula": "=INDEX($J$2:$J$15,MATCH(549,$N$2:$N$15,0))",
+    "explain": "MATCH finds 549 in the price column at position {{=MATCH(549,$N$2:$N$15,0)}}; INDEX returns position {{=MATCH(549,$N$2:$N$15,0)}} of the ID column: **{{=INDEX($J$2:$J$15,MATCH(549,$N$2:$N$15,0))}}**. VLOOKUP couldn't do this, because the ID is to the *left* of the price.",
+    "expect": "P010"
+  },
+  "mistakes": [
+    "Leaving out MATCH's 0: an approximate match on an unsorted column returns the wrong position, silently.",
+    "Search and return ranges that start on different rows (`$J$2:$J$15` with `$K$3:$K$16`). Positions then point at the wrong row.",
+    "Swapping the order: it's INDEX(what to return, MATCH(what to find, where to find it, 0))."
+  ],
+  "drills": [
+    {
+      "id": "match-pos",
+      "ask": "At what **position** is product **P010** in `$J$2:$J$15`?",
+      "starter": "",
+      "answerCheck": [
+        {
+          "type": "value",
+          "expect": 10
+        },
+        {
+          "type": "formula-uses",
+          "functions": [
+            "MATCH"
+          ],
+          "exactMatch": true
+        }
+      ],
+      "hint": "`MATCH(what, where, 0)` returns a position, not a value.",
+      "solution": "=MATCH(\"P010\",$J$2:$J$15,0)"
+    },
+    {
+      "id": "reverse-rep",
+      "ask": "What's the **RepID** of **Maria Ioannou**? (IDs are left of names.) Use INDEX/MATCH.",
+      "starter": "",
+      "answerCheck": [
+        {
+          "type": "value",
+          "expect": "R03"
+        },
+        {
+          "type": "formula-uses",
+          "functions": [
+            "INDEX",
+            "MATCH"
+          ],
+          "exactMatch": true
+        }
+      ],
+      "hint": "MATCH her name in `$Q$2:$Q$8`, then INDEX the RepIDs in `$P$2:$P$8`.",
+      "solution": "=INDEX($P$2:$P$8,MATCH(\"Maria Ioannou\",$Q$2:$Q$8,0))"
+    },
+    {
+      "id": "row-rep-id",
+      "ask": "What's the **RepID** of the rep on order O1003 (row 4)? Use INDEX/MATCH.",
+      "starter": "",
+      "answerCheck": [
+        {
+          "type": "value",
+          "expect": "R02"
+        },
+        {
+          "type": "formula-uses",
+          "functions": [
+            "INDEX",
+            "MATCH"
+          ],
+          "exactMatch": true
+        }
+      ],
+      "hint": "Same as before, but the name to find is the cell `E4`.",
+      "solution": "=INDEX($P$2:$P$8,MATCH(E4,$Q$2:$Q$8,0))"
+    },
+    {
+      "id": "index-2d",
+      "ask": "What's the **unit cost** of product **P012**? Use INDEX on the whole product table (`$J$2:$N$15`) with MATCH for the row and 4 for the column.",
+      "starter": "",
+      "answerCheck": [
+        {
+          "type": "value",
+          "expect": 34
+        },
+        {
+          "type": "formula-uses",
+          "functions": [
+            "INDEX",
+            "MATCH"
+          ],
+          "exactMatch": true
+        }
+      ],
+      "hint": "`INDEX(table, row_position, column_number)`: the row comes from MATCH, and UnitCost is column 4.",
+      "solution": "=INDEX($J$2:$N$15,MATCH(\"P012\",$J$2:$J$15,0),4)"
+    },
+    {
+      "id": "hire-date",
+      "ask": "When was **Kostas Alexiou** hired? Hire dates are in `$S$2:$S$8`. (The answer shows as a date; Excel stores dates as numbers.)",
+      "starter": "",
+      "answerCheck": [
+        {
+          "type": "value",
+          "expect": 44718
+        },
+        {
+          "type": "formula-uses",
+          "functions": [
+            "INDEX",
+            "MATCH"
+          ],
+          "exactMatch": true
+        }
+      ],
+      "hint": "MATCH the name in the rep names, INDEX the hire dates.",
+      "solution": "=INDEX($S$2:$S$8,MATCH(\"Kostas Alexiou\",$Q$2:$Q$8,0))"
+    }
+  ],
+  "checkpoint": {
+    "type": "quiz",
+    "passMark": 2,
+    "questions": [
+      {
+        "id": "match-returns",
+        "prompt": "What does MATCH return?",
+        "options": [
+          "The value it found",
+          "The position of the value in the range",
+          "TRUE or FALSE",
+          "The cell address"
+        ],
+        "answer": 1,
+        "explain": "MATCH says *where*. INDEX then says *what* is at that position."
+      },
+      {
+        "id": "why-index-match",
+        "prompt": "Why do interviewers like INDEX/MATCH?",
+        "options": [
+          "It's shorter than VLOOKUP",
+          "It looks left as well as right, and works in every Excel version",
+          "It's always faster",
+          "It doesn't need exact match"
+        ],
+        "answer": 1,
+        "explain": "Separate search and return columns, and no version limits."
+      },
+      {
+        "id": "price-549",
+        "prompt": "What does `=INDEX($J$2:$J$15,MATCH(549,$N$2:$N$15,0))` return?",
+        "options": [
+          "#N/A",
+          "P010",
+          "549",
+          "Standing Desk"
+        ],
+        "answer": 1,
+        "explain": "MATCH finds the price's position; INDEX returns the ID at that position.",
+        "verify": "=INDEX($J$2:$J$15,MATCH(549,$N$2:$N$15,0))"
+      }
+    ]
+  },
+  "claimAfter": "I can do reverse (leftward) lookups with INDEX/MATCH, in any version of Excel.",
+  "notYet": "Two-way lookups that MATCH a column header across a row. This practice console can't run a horizontal MATCH yet, so they aren't drilled here."
+}

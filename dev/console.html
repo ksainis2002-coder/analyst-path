@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Console demo · The Analyst Path</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap">
+  <link rel="stylesheet" href="../css/tokens.css">
+  <link rel="stylesheet" href="../css/base.css">
+  <link rel="stylesheet" href="../css/components.css">
+</head>
+<body>
+  <!--
+    Developer demo for Phase 2. It's not part of the app's navigation.
+    It shows that the console is a reusable component: each lab below is ONE
+    call to createConsole(host, options). In Phase 3, lessons will make the same
+    call from their JSON.
+  -->
+  <main class="container view stack stack-lg">
+    <header class="stack">
+      <p class="eyebrow">Developer demo · Phase 2 · <a href="../index.html">back to the app</a></p>
+      <h1>The formula console</h1>
+      <p class="lede">Type a formula and press Enter. The engine works it out, and the sheet lights up the cells it searched, matched and returned. Each lab below is one <code>createConsole()</code> call.</p>
+    </header>
+
+    <section class="stack" aria-labelledby="lab1-title">
+      <h2 id="lab1-title">Lab 1 · v1 sample: orders + product table</h2>
+      <p class="muted">Every formula from the v1 app, including the fixed "North + Monitor" example, plus two lookups that go wrong on purpose.</p>
+      <div id="lab1"></div>
+    </section>
+
+    <section class="stack" aria-labelledby="lab2-title">
+      <h2 id="lab2-title">Lab 2 · a second, independent console: commission tiers</h2>
+      <p class="muted">Different data, same component. Approximate match needs the first column sorted.</p>
+      <div id="lab2"></div>
+    </section>
+
+    <section class="stack">
+      <h2>How a lesson embeds it</h2>
+<pre class="card mono" style="overflow:auto;font-size:var(--text-sm)">import { createConsole } from "../js/ui/console.js";
+import { V1_SAMPLE } from "../js/data.js";
+
+createConsole(document.getElementById("lab1"), {
+  dataset: V1_SAMPLE,
+  starter: "VLOOKUP(C2,H2:J9,2,FALSE)",
+  examples: [{ formula: "SUM(F2:F25)", note: "total quantity" }],
+  onResult: (result, formula) => { /* drills & grader hook in here (Phase 3–4) */ },
+});</pre>
+    </section>
+  </main>
+
+  <script type="module">
+    import { createConsole } from "../js/ui/console.js";
+    import { V1_SAMPLE, toCells } from "../js/data.js";
+
+    const V1_EXAMPLES = [
+      ["SUM(F2:F25)", "total quantity across all orders"],
+      ["AVERAGE(F2:F25)", "average order size"],
+      ["COUNTA(A2:A25)", "how many orders (counts IDs)"],
+      ["ROUND(AVERAGE(F2:F25),1)", "average, rounded to 1 decimal"],
+      ['IF(F2>10,"HIGH","OK")', "flag order 1 by size"],
+      ['SUMIFS(F2:F25,D2:D25,"North")', "total quantity in North"],
+      ['SUMIFS(F2:F25,D2:D25,"North",C2:C25,"P002")', "North + Monitor only (replaces the v1 East example, which was 0)"],
+      ['COUNTIFS(F2:F25,">=15")', "orders of 15 or more"],
+      ['IFERROR(VLOOKUP("P999",H2:J9,2,FALSE),"Not found")', "catch an error gracefully"],
+      ["VLOOKUP(C2,$H$2:$J$9,3,FALSE)", "order 1's price, table locked"],
+      ['XLOOKUP("P002",H2:H9,I2:I9)', "XLOOKUP: no column counting"],
+      ["INDEX(H2:H9,MATCH(190,J2:J9,0))", "reverse: which ID costs 190"],
+      ["F2*VLOOKUP(C2,H2:J9,3,FALSE)", "revenue = qty × price"],
+      ['VLOOKUP("P999",H2:J9,2,FALSE)', "an ID that doesn't exist → #N/A"],
+      ['VLOOKUP("P999",H2:J9,2)', "the same, but FALSE forgotten → a silently wrong answer"],
+    ].map(([formula, note]) => ({ formula, note }));
+
+    createConsole(document.getElementById("lab1"), {
+      dataset: V1_SAMPLE,
+      starter: "VLOOKUP(C2,H2:J9,2,FALSE)",
+      examples: V1_EXAMPLES,
+      title: "Formula console · Lab 1",
+    });
+
+    const TIERS = {
+      label: "Commission tiers",
+      cells: toCells([
+        { origin: "A1", header: ["Rep", "Sales"], rows: [["A. Ioannou", 12400], ["B. Petrou", 780], ["C. Nikolaou", 5300], ["D. Georgiou", 20150]] },
+        { origin: "D1", header: ["MinSales", "Rate", "Tier"], rows: [[0, 0.02, "Bronze"], [1000, 0.04, "Silver"], [10000, 0.06, "Gold"], [20000, 0.08, "Platinum"]] },
+      ]),
+    };
+    createConsole(document.getElementById("lab2"), {
+      dataset: TIERS,
+      starter: "VLOOKUP(B2,$D$2:$F$5,3,TRUE)",
+      title: "Formula console · Lab 2",
+      examples: [
+        { formula: "VLOOKUP(B3,$D$2:$F$5,3,TRUE)", note: "B. Petrou's tier" },
+        { formula: "B5*VLOOKUP(B5,$D$2:$F$5,2,TRUE)", note: "D. Georgiou's commission" },
+        { formula: "VLOOKUP(B4,$D$2:$F$5,3,FALSE)", note: "same lookup with FALSE → #N/A (5300 isn't in the list)" },
+      ],
+    });
+  </script>
+</body>
+</html>

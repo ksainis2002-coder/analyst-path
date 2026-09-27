@@ -1,0 +1,180 @@
+{
+  "id": "a1-sales-summary",
+  "kind": "assignment",
+  "level": 1,
+  "title": "Assignment 1: Sales summary",
+  "dataset": "aegean",
+  "passMark": 8,
+  "key": "assignments/a1-sales-summary.key.json",
+  "intro": "**The brief.** It's your second week as a junior analyst at Aegean Supplies. Your manager has a meeting in an hour and wants a quick summary of 2025 from the order log in the practice sheet (orders in columns A–H).\n\nAnswer each of the 8 questions with **one formula** that works the answer out from the data, the way a practical test expects.\n\n- You'll see each formula's result as you go, but not whether it's right. That's checked when you submit.\n- To pass, all **8 of 8** must be right. After you submit you'll see which answers are wrong and why; fix them and resubmit as often as you need.\n- The answer key opens after your first submission. If you open it before you've passed, your pass is recorded as *passed with help*.",
+  "tasks": [
+    {
+      "id": "total-region",
+      "ask": "Total **units** sold in **Macedonia**.",
+      "answerCheck": [
+        {
+          "type": "value",
+          "expect": 1031
+        },
+        {
+          "type": "formula-uses",
+          "oneOf": [
+            "SUMIF",
+            "SUMIFS"
+          ]
+        }
+      ],
+      "hint": "Add the quantities (G) only where the region (D) is `\"Macedonia\"`."
+    },
+    {
+      "id": "orders-partner",
+      "ask": "How many **orders** came through the **Partner** channel?",
+      "answerCheck": [
+        {
+          "type": "value",
+          "expect": 40
+        },
+        {
+          "type": "formula-uses",
+          "oneOf": [
+            "COUNTIF",
+            "COUNTIFS"
+          ]
+        }
+      ],
+      "hint": "You're counting rows, not adding quantities, so this needs COUNTIF."
+    },
+    {
+      "id": "rep-units",
+      "ask": "Total units sold by **Nikos Petrou**.",
+      "answerCheck": [
+        {
+          "type": "value",
+          "expect": 426
+        },
+        {
+          "type": "formula-uses",
+          "oneOf": [
+            "SUMIF",
+            "SUMIFS"
+          ]
+        }
+      ],
+      "hint": "The rep names are in column E, and the name must match exactly: `\"Nikos Petrou\"`."
+    },
+    {
+      "id": "big-orders",
+      "ask": "How many orders were for **more than 12** units?",
+      "answerCheck": [
+        {
+          "type": "value",
+          "expect": 104
+        },
+        {
+          "type": "formula-uses",
+          "oneOf": [
+            "COUNTIF",
+            "COUNTIFS"
+          ]
+        }
+      ],
+      "hint": "\"More than 12\" leaves out orders of exactly 12. Check the operator in your criteria."
+    },
+    {
+      "id": "mouse-not-attica",
+      "ask": "Units of **Wireless Mice (P004)** sold **outside Attica**.",
+      "answerCheck": [
+        {
+          "type": "value",
+          "expect": 188
+        },
+        {
+          "type": "formula-uses",
+          "functions": [
+            "SUMIFS"
+          ]
+        }
+      ],
+      "hint": "Two conditions (the product in C, and the region in D is not Attica), so SUMIFS with `\"<>Attica\"`."
+    },
+    {
+      "id": "avg-peloponnese",
+      "ask": "Average **units per order** in the **Peloponnese**, rounded to **1 decimal**.",
+      "answerCheck": [
+        {
+          "type": "value",
+          "expect": 18.5
+        },
+        {
+          "type": "formula-uses",
+          "functions": [
+            "ROUND"
+          ]
+        },
+        {
+          "type": "formula-uses",
+          "oneOf": [
+            "SUMIF",
+            "SUMIFS"
+          ]
+        },
+        {
+          "type": "formula-uses",
+          "oneOf": [
+            "COUNTIF",
+            "COUNTIFS"
+          ]
+        }
+      ],
+      "hint": "Average per order = total Peloponnese units ÷ number of Peloponnese orders. Round the result to 1 decimal."
+    },
+    {
+      "id": "share-25plus",
+      "ask": "What **share** of all orders were for **at least 25** units? Give it as a decimal rounded to **2** places (e.g. 0.25).",
+      "answerCheck": [
+        {
+          "type": "value",
+          "expect": 0.31
+        },
+        {
+          "type": "formula-uses",
+          "functions": [
+            "ROUND"
+          ]
+        },
+        {
+          "type": "formula-uses",
+          "oneOf": [
+            "COUNTIF",
+            "COUNTIFS"
+          ]
+        }
+      ],
+      "hint": "Share = (orders with 25 or more units) ÷ (all orders). \"At least 25\" includes 25 itself."
+    },
+    {
+      "id": "rep-target",
+      "ask": "Maria Ioannou's unit target is **550**. Return `\"Target met\"` if her total units are at least 550, otherwise `\"Below target\"`.",
+      "answerCheck": [
+        {
+          "type": "value",
+          "expect": "Target met"
+        },
+        {
+          "type": "formula-uses",
+          "functions": [
+            "IF"
+          ]
+        },
+        {
+          "type": "formula-uses",
+          "oneOf": [
+            "SUMIF",
+            "SUMIFS"
+          ]
+        }
+      ],
+      "hint": "Put a SUMIF of her units inside IF's test: `IF(SUMIF(…)>=550, …)`. Compare total units, not the number of orders."
+    }
+  ]
+}
